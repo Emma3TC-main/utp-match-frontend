@@ -1,20 +1,34 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowRight, Check, Download, Home, LayoutList, Sparkles, Target, UserRound, Zap } from 'lucide-react'
+import { ArrowRight, Check, Download, Home, LayoutList, Sparkles, Target, UserRound, Zap, Sun, Moon } from 'lucide-react'
 import type { CSSProperties, ReactNode } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import type { CareerData, CourseData } from '../data/demo'
+import { useState } from 'react'
+
 
 export function AppFrame({ children, title, subtitle, progress, showHelp = true }: { children: ReactNode; title?: string; subtitle?: string; progress?: number; showHelp?: boolean }) {
+const [isDarkMode, setIsDarkMode] = useState(() => {
+    const savedTheme = window.localStorage.getItem('utp-match-theme')
+    return savedTheme === 'dark'
+  })
+
+  const toggleTheme = () => {
+    setIsDarkMode((prev) => {
+      const nextState = !prev
+      window.localStorage.setItem('utp-match-theme', nextState ? 'dark' : 'light')
+      return nextState
+    })
+  }
   const navItems = [
     { to: '/home', label: 'Inicio' },
     { to: '/compare', label: 'Comparar' },
     { to: '/plan', label: 'Mi plan' },
   ]
 
-  return (
-    <div className="app-shell">
+return (
+    <div className={`app-shell transition-colors duration-250 ${isDarkMode ? 'dark-theme' : 'light-theme'}`}>      
       <div className="app-phone">
-        <header className="topbar">
+                <header className="topbar">
           <Link className="topbar__brand" to="/welcome">UTP Match</Link>
           <nav className="topbar__nav" aria-label="Navegación principal">
             {navItems.map((item) => (
@@ -23,9 +37,27 @@ export function AppFrame({ children, title, subtitle, progress, showHelp = true 
               </NavLink>
             ))}
           </nav>
-          <Link className="topbar__cta" to="/onboarding">Empezar</Link>
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', justifySelf: 'end' }}>
+            <button 
+              type="button"
+              onClick={toggleTheme}
+              className="flex items-center justify-center w-8 h-8 rounded-full border transition-all active:scale-90 cursor-pointer"
+              style={{ 
+                color: isDarkMode ? '#f59e0b' : '#475569', 
+                backgroundColor: isDarkMode ? '#1e293b' : '#ffffff', 
+                borderColor: isDarkMode ? '#334155' : '#cbd5e1',
+                padding: 0,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+              }}
+              title={isDarkMode ? "Cambiar a Modo Claro" : "Cambiar a Modo Oscuro"}
+            >
+              {isDarkMode ? <Sun size={15} /> : <Moon size={15} />}
+            </button>
+            
+            <Link className="topbar__cta" to="/onboarding">Empezar</Link>
+          </div>
         </header>
-
         <div className="app-content">
           <header className="app-header">
             <div>
