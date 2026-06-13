@@ -7,7 +7,7 @@ import { useState } from 'react'
 
 
 export function AppFrame({ children, title, subtitle, progress, showHelp = true }: { children: ReactNode; title?: string; subtitle?: string; progress?: number; showHelp?: boolean }) {
-const [isDarkMode, setIsDarkMode] = useState(() => {
+  const [isDarkMode, setIsDarkMode] = useState(() => {
     const savedTheme = window.localStorage.getItem('utp-match-theme')
     return savedTheme === 'dark'
   })
@@ -16,19 +16,22 @@ const [isDarkMode, setIsDarkMode] = useState(() => {
     setIsDarkMode((prev) => {
       const nextState = !prev
       window.localStorage.setItem('utp-match-theme', nextState ? 'dark' : 'light')
+      // 🌓 Elvis: Despachamos un evento nativo rápido para actualizar la raíz en caliente
+      window.dispatchEvent(new Event('utp-theme-toggle'))
       return nextState
     })
   }
+
   const navItems = [
     { to: '/home', label: 'Inicio' },
     { to: '/compare', label: 'Comparar' },
     { to: '/plan', label: 'Mi plan' },
   ]
 
-return (
+  return (
     <div className={`app-shell transition-colors duration-250 ${isDarkMode ? 'dark-theme' : 'light-theme'}`}>      
       <div className="app-phone">
-                <header className="topbar">
+        <header className="topbar">
           <Link className="topbar__brand" to="/welcome">UTP Match</Link>
           <nav className="topbar__nav" aria-label="Navegación principal">
             {navItems.map((item) => (
@@ -58,6 +61,7 @@ return (
             <Link className="topbar__cta" to="/onboarding">Empezar</Link>
           </div>
         </header>
+
         <div className="app-content">
           <header className="app-header">
             <div>
