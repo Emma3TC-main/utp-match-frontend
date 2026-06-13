@@ -16,7 +16,6 @@ export function AppFrame({ children, title, subtitle, progress, showHelp = true 
     setIsDarkMode((prev) => {
       const nextState = !prev
       window.localStorage.setItem('utp-match-theme', nextState ? 'dark' : 'light')
-      // 🌓 Elvis: Despachamos un evento nativo rápido para actualizar la raíz en caliente
       window.dispatchEvent(new Event('utp-theme-toggle'))
       return nextState
     })
@@ -71,7 +70,6 @@ export function AppFrame({ children, title, subtitle, progress, showHelp = true 
             </div>
             <div className="header-actions">
               {typeof progress === 'number' ? <span className="progress-label">Paso {Math.max(1, Math.ceil(progress / 34))} de 3</span> : null}
-              {showHelp ? <button className="icon-button" type="button"><Download size={16} /></button> : null}
               <button className="icon-button icon-button--accent" type="button"><UserRound size={18} /></button>
             </div>
           </header>

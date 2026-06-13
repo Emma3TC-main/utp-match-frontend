@@ -2364,10 +2364,6 @@ body {
   }
 } 
 
-/* ==========================================================================
-   Compartimento de Modo Oscuro Global Sincronizado - Elvis
-   ========================================================================== */
-
 .dark-theme,
 .dark-theme body,
 .dark-theme .app-stage,
@@ -2376,35 +2372,32 @@ body {
 .dark-theme .app-shell,
 .dark-theme .app-phone,
 .dark-theme .app-content {
-  background: #0b1329 !important; 
-  background-color: #0b1329 !important;
-  background-image: none !important; 
-  color: #f8fafc !important;
+  background: #0b1329; 
+  background-color: #0b1329;
+  background-image: none; 
+  color: #f8fafc;
 }
 
-/* Forzamos el cargador intermedio y sus esqueletos */
 .dark-theme .route-loader *, 
 .dark-theme .skeleton-line, 
 .dark-theme .skeleton-box, 
 .dark-theme .skeleton-cover {
-  background: #111c34 !important;
-  background-color: #111c34 !important;
-  border-color: #1e293b !important;
+  background: #111c34;
+  background-color: #111c34;
+  border-color: #1e293b;
 }
 
-/* Forzamos la barra superior a volverse oscura de forma estricta */
 .dark-theme .topbar {
-  background: #111c34 !important;
-  background-color: #111c34 !important;
-  border-bottom-color: #1e293b !important;
+  background: #111c34;
+  background-color: #111c34;
+  border-bottom-color: #1e293b;
 }
 
 .dark-theme .topbar__brand,
 .dark-theme .topbar__link {
-  color: #f8fafc !important;
+  color: #f8fafc;
 }
 
-/* Forzamos las tarjetas principales y el modal del loader */
 .dark-theme .surface,
 .dark-theme .hero-card,
 .dark-theme .link-card,
@@ -2412,9 +2405,9 @@ body {
 .dark-theme .community-card,
 .dark-theme .share-card,
 .dark-theme .route-loader__card { 
-  background: #111c34 !important;
-  background-color: #111c34 !important;
-  border-color: #1e293b !important;
+  background: #111c34;
+  background-color: #111c34;
+  border-color: #1e293b;
 }
 
 .dark-theme .screen-title,
@@ -2425,7 +2418,7 @@ body {
 .dark-theme .hero-card h2,
 .dark-theme .link-card strong,
 .dark-theme .task-item strong {
-  color: #ffffff !important;
+  color: #ffffff;
 }
 
 .dark-theme .screen-subtitle,
@@ -2434,17 +2427,16 @@ body {
 .dark-theme .hero-card p,
 .dark-theme .link-card p,
 .dark-theme .task-item span {
-  color: #94a3b8 !important;
+  color: #94a3b8;
 }
 
-/* Reglas nativas para retorno a modo claro */
 .light-theme,
 .light-theme body {
-  background: var(--page-bg) !important;
-  color: var(--muted) !important;
+  background: var(--page-bg);
+  color: var(--muted);
 }
 
 .light-theme .topbar {
-  background: rgba(255, 255, 255, 0.96) !important;
-  border-bottom-color: var(--soft-border) !important;
+  background: rgba(255, 255, 255, 0.96);
+  border-bottom-color: var(--soft-border);
 }
