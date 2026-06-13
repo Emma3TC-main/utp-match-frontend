@@ -36,6 +36,9 @@ function AppRouter() {
   const location = useLocation()
   const { isLoading, setIsLoading } = useAppContext()
 
+  // 🌓 Elvis: Estado dinámico sincronizado con el localStorage
+  const [isDark, setIsDark] = useState(() => window.localStorage.getItem('utp-match-theme') === 'dark')
+
   useEffect(() => {
     setIsLoading(true)
     const timer = window.setTimeout(() => setIsLoading(false), 220)
@@ -43,10 +46,19 @@ function AppRouter() {
     return () => window.clearTimeout(timer)
   }, [location.pathname, setIsLoading])
 
+  // 🌓 Elvis: Escuchamos el evento de cambio de tema global en tiempo real
+  useEffect(() => {
+    const handleThemeChange = () => {
+      setIsDark(window.localStorage.getItem('utp-match-theme') === 'dark')
+    }
+    window.addEventListener('utp-theme-toggle', handleThemeChange)
+    return () => window.removeEventListener('utp-theme-toggle', handleThemeChange)
+  }, [])
+
   const showBottomNav = ['/home', '/compare', '/compare/result', '/match', '/plan', '/summary', '/admin'].some((route) => location.pathname.startsWith(route))
 
   return (
-    <div className="app-stage">
+    <div className={`app-stage ${isDark ? 'dark-theme' : 'light-theme'}`}>
       <AnimatePresence mode="wait">
         <motion.div
           key={location.pathname}
