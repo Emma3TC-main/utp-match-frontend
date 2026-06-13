@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import type { CareerId } from '../data/demo'
-import { AppStateContext, STORAGE_KEY, readStoredState, type AppStateSnapshot, type AppStateValue, type ProfileState } from './appState'
+import { AppStateContext, STORAGE_KEY, readStoredState, type AppStateSnapshot, type AppStateValue, type ProfileState, type AuthUser } from './appState'
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AppStateSnapshot>(() => readStoredState())
@@ -73,6 +73,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setState((current) => ({ ...current, isLoading: value }))
   }, [])
 
+  const setAuthUser = useCallback((user: AuthUser | null) => {
+    setState((current) => ({ ...current, authUser: user }))
+  }, [])
+
+  const updateAuthUser = useCallback((updates: Partial<AuthUser>) => {
+    setState((current) => {
+      if (!current.authUser) return current
+      return { ...current, authUser: { ...current.authUser, ...updates } }
+    })
+  }, [])
+
   const value: AppStateValue = {
     ...state,
     setProfile,
@@ -81,6 +92,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     toggleSavedCourse,
     setComparisonTab,
     setIsLoading,
+    setAuthUser,
+    updateAuthUser,
   }
 
   return <AppStateContext.Provider value={value}>{children}</AppStateContext.Provider>

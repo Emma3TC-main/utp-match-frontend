@@ -22,6 +22,8 @@ import {
   Surface,
   TaskItem,
 } from './components/ui'
+import LoginPage from './pages/LoginPage'
+import RegisterPage from './pages/RegisterPage'
 import { actionTasks, adminCatalog, careers, comparisonTabs } from './data/demo'
 
 function App() {
@@ -60,6 +62,8 @@ function AppRouter() {
             <Route path="/" element={<Navigate to="/welcome" replace />} />
             <Route path="/welcome" element={<WelcomePage />} />
             <Route path="/onboarding" element={<OnboardingPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
             <Route path="/home" element={<HomePage />} />
             <Route path="/compare" element={<SelectorPage />} />
             <Route path="/compare/result" element={<ComparePage />} />
@@ -96,44 +100,104 @@ function WelcomePage() {
   const navigate = useNavigate()
 
   return (
-    <AppFrame title="No estás eligiendo a ciegas." subtitle="Compara carreras, entiende tus cursos y crea un plan para decidir con más confianza.">
-      <div className="hero-card">
+    <AppFrame title="Elige carrera sin sentirte perdido." subtitle="Mira qué hace diferente cada profesión, entiende los cursos reales y crea un plan que puedas defender.">
+      <section className="hero-card hero-card--landing">
         <div className="hero-card__copy">
-          <span className="eyebrow eyebrow--hero">UTP ya te ayuda a descubrir qué podrías estudiar</span>
-          <h2>Mira cómo se vive una carrera antes de elegirla.</h2>
+          <span className="eyebrow eyebrow--hero">Tu decisión merece claridad</span>
+          <h2>Descubre carreras como estudiantes que ya las viven, no como un PDF aburridо.</h2>
           <p>
-            UTP Match te ayuda a entender cómo será vivir esa carrera antes de matricularte.
-            Es una guía visual, clara y juvenil para decidir con menos presión.
+            Comparaciones visuales que van al punto. Explicaciones en lenguaje real. Un plan paso a paso para que
+            hables con seguridad con tu familia, tutor u orientador. Sin tablas, sin jerga, sin esperas.
           </p>
           <div className="hero-actions">
-            <PrimaryButton onClick={() => navigate('/onboarding')}>Empezar mi match</PrimaryButton>
-            <SecondaryButton onClick={() => navigate('/compare')}>Ya tengo carreras en mente</SecondaryButton>
+            <PrimaryButton onClick={() => navigate('/onboarding')}>Iniciar mi match</PrimaryButton>
+            <SecondaryButton onClick={() => navigate('/compare')}>Ver comparador</SecondaryButton>
+          </div>
+          <div className="hero-badges">
+            <span>Entiende qué hace diferente cada carrera</span>
+            <span>Explora sin miedo a equivocarte</span>
+            <span>Crea un plan que puedas defender</span>
           </div>
         </div>
 
-        <div className="hero-visual">
-          <div className="hero-visual__orb">
-            <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut' }} className="hero-avatar">
+        <div className="hero-visual hero-visual--landing">
+          <div className="hero-visual__scene">
+            <div className="hero-panel hero-panel--main">
+              <div className="hero-panel__tag">Panel de descubrimiento</div>
+              <strong>Match 92%</strong>
+              <p>Ingeniería de Sistemas</p>
+              <div className="hero-panel__chips">
+                <span>Analítico</span>
+                <span>Trabajo en equipo</span>
+              </div>
+            </div>
+
+            <div className="hero-panel hero-panel--small hero-panel--top">
+              <strong>92%</strong>
+              <span>Claridad en tu decisión</span>
+            </div>
+            <div className="hero-panel hero-panel--small hero-panel--bottom">
+              <strong>3 módulos</strong>
+              <span>Comparación, cursos y plan</span>
+            </div>
+            <motion.div animate={{ y: [0, -10, 0] }} transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }} className="hero-bubble">
               <Sparkles size={18} />
               <span>Explora</span>
             </motion.div>
-            <div className="hero-card-mini hero-card-mini--top">
-              <strong>Match 92%</strong>
-              <span>Ingeniería de Sistemas</span>
-            </div>
-            <div className="hero-card-mini hero-card-mini--bottom">
-              <strong>92% de claridad</strong>
-              <span>Tu decisión puede tener dudas, pero no tiene que estar desordenada.</span>
-            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <Surface className="surface--stack">
-        <ScreenTitleBlock eyebrow="Empieza aquí" title="Qué puedes hacer dentro de la app" body="Todo el flujo está pensado para una sola mano, lectura rápida y cards visuales." />
-        <LinkCard title="Comparar carreras" body="Selecciona dos opciones y mira diferencias sin tablas pesadas." to="/compare" />
-        <LinkCard title="Entender un curso" body="Convierte sílabos técnicos en lenguaje claro y útil." to="/course/algoritmos" />
-        <LinkCard title="Crear tu plan" body="Guarda próximos pasos para conversar con familia u orientador." to="/plan" />
+      <section className="landing-section landing-section--cards">
+        <Surface className="benefit-card">
+          <h3>¿Por qué somos diferentes?</h3>
+          <p>Porque hablamos en tu idioma, no en el de la universidad. Mostramos qué aprenderás realmente, quiénes ya lo hacen, y qué necesitas para estar listo.</p>
+        </Surface>
+        <div className="feature-grid">
+          <Surface className="feature-card">
+            <span className="badge badge--soft">Lado a lado</span>
+            <h3>Compara de verdad</h3>
+            <p>¿Sistemas o Industrial? Mira exactamente qué las hace diferentes en matemáticas, programación, gestión y comunicación.</p>
+          </Surface>
+          <Surface className="feature-card">
+            <span className="badge badge--soft">Traducido</span>
+            <h3>Entiende los cursos</h3>
+            <p>Descubre qué es realmente "Principios de Algoritmos" o "Procesos Organizacionales" en palabras que tenga sentido.</p>
+          </Surface>
+          <Surface className="feature-card">
+            <span className="badge badge--soft">Preparado</span>
+            <h3>Crea tu argumento</h3>
+            <p>Genera un plan concreto para hablar con tu familia o tutor. Con datos, no con dudas.</p>
+          </Surface>
+        </div>
+      </section>
+
+      <Surface className="surface--stack landing-section landing-section--modules">
+        <ScreenTitleBlock eyebrow="Tu ruta en 4 pasos" title="Desde la duda hasta la decisión" body="Cada módulo te acerca más a una conversación informada. Rápido, visual, y sin abrumar." />
+        <div className="module-grid">
+          <div className="module-card">
+            <strong>Conocerte primero</strong>
+            <p>Cuéntanos qué te mueve, tus intereses y lo que te asusta. Esto es privado y solo para ti.</p>
+          </div>
+          <div className="module-card">
+            <strong>Comparar con claridad</strong>
+            <p>Mira lado a lado cómo se diferencian dos carreras en lo que realmente importa.</p>
+          </div>
+          <div className="module-card">
+            <strong>Entender los cursos</strong>
+            <p>Descubre qué aprenderás realmente en cada materia, sin jerga de universidad.</p>
+          </div>
+          <div className="module-card">
+            <strong>Armar tu plan</strong>
+            <p>Guarda pasos concretos para hablar con tu familia, tutor o un estudiante que ya está ahí.</p>
+          </div>
+        </div>
+      </Surface>
+
+      <Surface className="surface--stack landing-section landing-section--quickstart">
+        <ScreenTitleBlock eyebrow="Empieza ahora" title="Prueba sin presión" body="No hay registro. No hay datos raros. Solo tú, explorando qué podría ser tu carrera." />
+        <LinkCard title="¿Qué me diferencia?" body="Mira cómo cambias tus decisiones al comparar lado a lado." to="/compare" />
+        <LinkCard title="Mi plan real" body="Crea próximos pasos que puedas defender en casa." to="/plan" />
       </Surface>
     </AppFrame>
   )
@@ -639,10 +703,13 @@ function PlanPage() {
 }
 
 function SummaryPage() {
-  const { profile } = useAppContext()
+  const { profile, selectedCareers } = useAppContext()
+  
+  const selectedCareer = careers.find((c) => c.id === selectedCareers[0]) ?? careers[0]
+  const today = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
 
   const downloadSummary = () => {
-    const content = `UTP Match\n${profile.name}\nCarrera recomendada: Ingeniería de Sistemas\nCarrera alternativa: Ingeniería Industrial`
+    const content = `UTP Match\n${profile.name}\nCarrera recomendada: ${selectedCareer.name}\nMatch: ${selectedCareer.match}%\nFecha: ${today}`
     const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
     const url = window.URL.createObjectURL(blob)
     const anchor = document.createElement('a')
@@ -660,21 +727,24 @@ function SummaryPage() {
   return (
     <AppFrame title="Resumen de Perfil" subtitle="Un análisis detallado de tu futuro profesional." progress={100}>
       <Surface className="surface--stack">
-        <div className="share-card">
+        <div className="share-card share-card--premium">
           <div className="share-card__header">
             <div>
               <span className="brand brand--card">UTP Match</span>
               <p>Reporte de orientación vocacional</p>
             </div>
-            <div className="share-card__date">24 Oct, 2024</div>
+            <div className="share-card__date">{today}</div>
           </div>
           <div className="share-card__title-row">
             <div>
               <span className="badge badge--soft">Recomendación principal</span>
-              <h2>Ingeniería de Sistemas e Informática</h2>
-              <p>Tu perfil muestra una inclinación natural hacia la resolución de problemas, la lógica y la creación de soluciones escalables.</p>
+              <h2>{selectedCareer.name}</h2>
+              <p>{selectedCareer.insight}</p>
             </div>
-            <div className="share-card__match">92%<span>MATCH</span></div>
+            <div className="share-card__match share-card__match--highlight">
+              <div className="match-ring">{selectedCareer.match}%</div>
+              <span className="match-label">MATCH</span>
+            </div>
           </div>
 
           <div className="share-grid">
