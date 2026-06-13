@@ -2359,7 +2359,66 @@ body {
     gap: 14px;
   }
 
-  .bottom-nav {
+.bottom-nav {
     display: flex;
   }
+} 
+.dark-theme,
+.dark-theme body,
+.dark-theme .app-stage {
+  background: #0b1329; 
+  background-image: none; 
+  color: #f8fafc;
+}
+
+.dark-theme .topbar {
+  background: #111c34;
+  border-bottom-color: #1e293b;
+}
+
+.dark-theme .topbar__brand,
+.dark-theme .topbar__link {
+  color: #f8fafc;
+}
+
+.dark-theme .surface,
+.dark-theme .hero-card,
+.dark-theme .link-card,
+.dark-theme .task-item,
+.dark-theme .community-card,
+.dark-theme .share-card {
+  background: #111c34;
+  background-color: #111c34;
+  border-color: #1e293b;
+}
+
+.dark-theme .screen-title,
+.dark-theme .title-block h2,
+.dark-theme .surface h2,
+.dark-theme .surface h3,
+.dark-theme .surface strong,
+.dark-theme .hero-card h2,
+.dark-theme .link-card strong,
+.dark-theme .task-item strong {
+  color: #ffffff;
+}
+
+.dark-theme .screen-subtitle,
+.dark-theme .title-block p,
+.dark-theme .surface p,
+.dark-theme .hero-card p,
+.dark-theme .link-card p,
+.dark-theme .task-item span {
+  color: #94a3b8;
+}
+
+.light-theme,
+.light-theme body {
+  background: var(--page-bg);
+  color: var(--muted);
+}
+
+.light-theme .topbar {
+  background: rgba(255, 255, 255, 0.96);
+  border-bottom-color: var(--soft-border) ;
 }
