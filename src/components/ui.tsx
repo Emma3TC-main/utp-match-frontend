@@ -122,31 +122,19 @@ export function AppFrame({ children, title, subtitle, progress, showHelp = true 
             </div>
             
 
-            <div className="header-actions">
-              {typeof progress === 'number' ? (
-                <span className="progress-label">Paso {Math.max(1, Math.ceil(progress / 34))} de 3</span>
-              ) : null}
-              
-              {/* Lógica condicional segura para el icono de perfil */}
-              {authUser ? (
-                <button 
-                  className="icon-button icon-button--accent" 
-                  type="button"
-                  onClick={() => navigate('/login')}
-                  title="Mi perfil"
-                >
-                  <UserRound size={18} />
-                </button>
-              ) : (
-                <button 
-                  className="icon-button" 
-                  type="button" 
-                  onClick={() => navigate('/login')}
-                >
-                  <UserRound size={18} />
-                </button>
-              )}
-            </div>
+<div className="header-actions">
+  {typeof progress === 'number' ? (
+    <span className="progress-label">Paso {Math.max(1, Math.ceil(progress / 34))} de 3</span>
+  ) : null}
+  <button 
+    className="icon-button icon-button--accent" 
+    type="button" 
+    onClick={() => setShowSideMenu(true)}
+    title="Cuenta"
+  >
+    <UserRound size={18} />
+  </button>
+</div>
           </header>
 
           {typeof progress === 'number' ? (
@@ -157,7 +145,7 @@ export function AppFrame({ children, title, subtitle, progress, showHelp = true 
             </div>
           ) : null}
 
-          <main className="app-main">{children}</main>
+<main className="app-main">{children}</main>
         </div>
 
         <footer className="app-footer">
@@ -172,6 +160,14 @@ export function AppFrame({ children, title, subtitle, progress, showHelp = true 
             <a href="#">UTP Institucional</a>
           </nav>
         </footer>
+        
+<FloatingAuthMenu 
+  isOpen={showSideMenu}
+  onClose={() => setShowSideMenu(false)}
+  onLoginClick={() => { navigate('/login'); setShowSideMenu(false) }}
+  authUser={authUser}
+  onLogout={() => { setAuthUser(null); setShowSideMenu(false) }}
+/>
       </div>
     </div>
   )
@@ -519,7 +515,7 @@ export function LinkCard({ title, body, to }: { title: string; body: string; to:
   )
 }
 
-export function FloatingAuthMenu({ isOpen, onClose, onLoginClick, onRegisterClick, authUser, onLogout }: { isOpen: boolean; onClose: () => void; onLoginClick: () => void; onRegisterClick: () => void; authUser?: { id:string; email:string; name:string } | null; onLogout?: () => void }) {
+export function FloatingAuthMenu({ isOpen, onClose, onLoginClick, authUser, onLogout }: { isOpen: boolean; onClose: () => void; onLoginClick: () => void; authUser?: { id:string; email:string; name:string } | null; onLogout?: () => void }) {
   useEffect(() => {
     if (!isOpen) return
 
@@ -527,7 +523,6 @@ export function FloatingAuthMenu({ isOpen, onClose, onLoginClick, onRegisterClic
       if (e.key === 'Escape') onClose()
     }
 
-    // Disable body scroll while side menu is open
     const prevOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     document.body.classList.add('side-open')
@@ -568,15 +563,14 @@ export function FloatingAuthMenu({ isOpen, onClose, onLoginClick, onRegisterClic
               <p>Accede o crea una cuenta para guardar tus planes.</p>
               <div className="side-auth-actions">
                 {authUser ? (
-                  // When logged in, show logout action
                   <>
                     <div style={{padding:'8px 0', color:'var(--text)'}}>Conectado como <strong style={{display:'block'}}>{authUser.name || authUser.email}</strong></div>
-                    <button className="side-btn" onClick={() => { if (onLogout) onLogout(); onClose() }}><LogOut size={16} /><span>Cerrar sesión</span></button>
+                    <button className="side-btn" type="button" onClick={() => { if (onLogout) onLogout(); onClose() }}><LogOut size={16} /><span>Cerrar sesión</span></button>
                   </>
                 ) : (
                   <>
-                    <button className="side-btn" onClick={onLoginClick}><LogIn size={16} /><span>Iniciar sesión</span></button>
-                    <button className="side-btn" onClick={onRegisterClick}><UserPlus size={16} /><span>Registrarse</span></button>
+                    {/* Botón único y limpio hacia el login inteligente */}
+                    <button className="side-btn" type="button" onClick={() => { onLoginClick(); onClose() }}><LogIn size={16} /><span>Ingresar a mi cuenta</span></button>
                   </>
                 )}
               </div>

@@ -12,7 +12,7 @@ export default function RegisterPage() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
     if (!name.trim()) return setError('Ingresa tu nombre')
@@ -22,8 +22,12 @@ export default function RegisterPage() {
     setLoading(true)
     setTimeout(() => {
       setLoading(false)
+      
+      window.localStorage.setItem('demo-user-name', name) 
+      
       setAuthUser({ id: Math.random().toString(36).slice(2), email, name, phone: '', description: '', photo: '' })
-      navigate('/home')
+      
+      navigate('/onboarding')
     }, 900)
   }
 

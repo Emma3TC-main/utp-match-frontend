@@ -23,6 +23,7 @@ import {
   TaskItem,
 } from './components/ui'
 import { actionTasks, adminCatalog, careers, comparisonTabs } from './data/demo'
+import RegisterPage from './pages/RegisterPage'
 
 function App() {
   return (
@@ -124,27 +125,25 @@ function AppRouter() {
           className="route-layer"
         >
           <Routes location={location}>
-            {/* 1. Raíz automática a Bienvenida */}
-            <Route path="/" element={<Navigate to="/welcome" replace />} />
-            <Route path="/welcome" element={<WelcomePage />} />
-            
-            {/* 2. Login intercalado con tu componente */}
-            <Route path="/login" element={<LoginPage />} />
-            
-            {/* 3. Onboarding secuencial */}
-            <Route path="/onboarding" element={<OnboardingPage />} />
-            
-            {/* 4. Flujo interno de la app */}
-            <Route path="/home" element={<HomePage />} />
-            <Route path="/compare" element={<SelectorPage />} />
-            <Route path="/compare/result" element={<ComparePage />} />
-            <Route path="/course/:courseId" element={<CoursePage />} />
-            <Route path="/match" element={<MatchPage />} />
-            <Route path="/plan" element={<PlanPage />} />
-            <Route path="/summary" element={<SummaryPage />} />
-            <Route path="/admin" element={<AdminPage />} />
-            <Route path="*" element={<Navigate to="/welcome" replace />} />
-          </Routes>
+  <Route path="/" element={<Navigate to="/welcome" replace />} />
+  <Route path="/welcome" element={<WelcomePage />} />
+
+  <Route path="/login" element={<LoginPage />} />
+
+  <Route path="/register" element={<RegisterPage />} />
+
+  <Route path="/onboarding" element={<OnboardingPage />} />
+
+  <Route path="/home" element={<HomePage />} />
+  <Route path="/compare" element={<SelectorPage />} />
+  <Route path="/compare/result" element={<ComparePage />} />
+  <Route path="/course/:courseId" element={<CoursePage />} />
+  <Route path="/match" element={<MatchPage />} />
+  <Route path="/plan" element={<PlanPage />} />
+  <Route path="/summary" element={<SummaryPage />} />
+  <Route path="/admin" element={<AdminPage />} />
+  <Route path="*" element={<Navigate to="/welcome" replace />} />
+</Routes>
         </motion.div>
       </AnimatePresence>
 
@@ -181,10 +180,8 @@ function WelcomePage() {
             hables con seguridad con tu familia, tutor u orientador. Sin tablas, sin jerga, sin esperas.
           </p>
           <div className="hero-actions">
-    {/* Botón principal: Va al Login y luego al Test */}
     <PrimaryButton onClick={() => navigate('/login')}>Empezar mi match</PrimaryButton>
     
-    {/* Botón secundario: Va directo al comparador (Modo Invitado) */}
     <SecondaryButton onClick={() => navigate('/compare')}>Ya tengo carreras en mente</SecondaryButton>
   </div>
           <div className="hero-badges">
@@ -281,7 +278,9 @@ function OnboardingPage() {
   const navigate = useNavigate()
   const { profile, setProfile } = useAppContext()
   const [step, setStep] = useState(0)
-  const [name, setName] = useState(profile.name)
+const [name, setName] = useState(() => {
+  return window.localStorage.getItem('demo-user-name') || profile.name || ''
+})
   const [year, setYear] = useState(profile.year)
   const [interests, setInterests] = useState(profile.interests)
   const [skills, setSkills] = useState(profile.skills)
