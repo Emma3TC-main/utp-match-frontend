@@ -9,20 +9,26 @@ import {
 } from "../components/ui";
 import { careers, comparisonTabs } from "../data/demo";
 import { useAppContext } from "../state/appState";
-import type { Career } from "../types/domain";
+import type { CareerViewModel, ComparisonTab } from "../types/domain";
 import CompareHero from "./compare/CompareHero";
 import CompareTabPanel from "./compare/CompareTabPanel";
 
-function findCareer(id: string | undefined, fallbackIndex: number): Career {
-  return (careers.find((career) => career.id === id) ??
-    careers[fallbackIndex]) as Career;
+function findCareer(
+  id: string | undefined,
+  fallbackIndex: number,
+): CareerViewModel {
+  return careers.find((career) => career.id === id) ?? careers[fallbackIndex];
 }
 
 export default function ComparePage() {
   const navigate = useNavigate();
+
   const { selectedCareers, selectedComparisonTab, setComparisonTab } =
     useAppContext();
-  const [selectedTab, setSelectedTab] = useState(selectedComparisonTab);
+
+  const [selectedTab, setSelectedTab] = useState<ComparisonTab>(
+    selectedComparisonTab,
+  );
 
   useEffect(() => {
     setComparisonTab(selectedTab);

@@ -6,12 +6,12 @@ import {
   ScreenTitleBlock,
   Surface,
 } from "../../components/ui";
-import type { Career } from "../../types/domain";
+import type { CareerViewModel, ComparisonTab } from "../../types/domain";
 
 type CompareTabPanelProps = {
-  tab: string;
-  first: Career;
-  second: Career;
+  tab: ComparisonTab;
+  first: CareerViewModel;
+  second: CareerViewModel;
 };
 
 export default function CompareTabPanel({
@@ -33,7 +33,7 @@ export default function CompareTabPanel({
         <Surface>
           <ScreenTitleBlock
             title="Diferencia rápida"
-            body="Sistemas se apoya más en lógica y programación temprana. Industrial combina matemática, procesos y gestión."
+            body={`${first.name} se apoya más en ${first.area}. ${second.name} se orienta más a ${second.area}.`}
           />
           <p className="insight-copy">{first.insight}</p>
         </Surface>
@@ -47,6 +47,7 @@ export default function CompareTabPanel({
         {careersToCompare.map((career) => (
           <Surface key={career.id}>
             <h3>{career.name}</h3>
+
             <IntensityBar
               label="Matemática"
               value={career.intensity.mathematics}
@@ -83,22 +84,23 @@ export default function CompareTabPanel({
         {careersToCompare.map((career) => (
           <Surface key={career.id}>
             <h3>{career.name}</h3>
+
             <div className="course-stack">
               {career.courses.map((course) => (
-                <div
+                <button
                   key={course.id}
                   className="course-compact"
                   onClick={() => navigate(`/course/${course.id}`)}
-                  role="button"
-                  tabIndex={0}
+                  type="button"
                 >
                   <div>
                     <span className="badge badge--soft">{course.cycle}</span>
                     <strong>{course.name}</strong>
                     <p>{course.explanation}</p>
                   </div>
+
                   <ChevronRight size={16} />
-                </div>
+                </button>
               ))}
             </div>
           </Surface>
@@ -124,6 +126,7 @@ export default function CompareTabPanel({
 
             <div className="detail-list">
               <strong>Fortalezas</strong>
+
               {career.strengths.map((item) => (
                 <span key={item}>{item}</span>
               ))}
@@ -140,6 +143,7 @@ export default function CompareTabPanel({
         title="Insight final"
         body="No se trata de decirte qué elegir, sino de ayudarte a conversar mejor."
       />
+
       <p className="insight-copy">
         {first.insight} {second.insight}
       </p>

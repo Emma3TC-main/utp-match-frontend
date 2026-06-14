@@ -1,100 +1,137 @@
-import { useCallback, useEffect, useState } from 'react'
-import type { ReactNode } from 'react'
-import type { CareerId } from '../data/demo'
-import { AppStateContext, STORAGE_KEY, readStoredState, type AppStateSnapshot, type AppStateValue, type ProfileState, type AuthUser } from './appState'
+import { useCallback, useEffect, useMemo, useState } from "react";
+import type { ReactNode } from "react";
+import type { ComparisonTab } from "../types/domain";
+import {
+  AppStateContext,
+  STORAGE_KEY,
+  readStoredState,
+  type AppStateSnapshot,
+  type AppStateValue,
+  type ProfileState,
+  type AuthUser,
+} from "./appState";
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<AppStateSnapshot>(() => readStoredState())
+  const [state, setState] = useState<AppStateSnapshot>(() => readStoredState());
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
-    }, 50)
-    return () => window.clearTimeout(timer)
-  }, [state])
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }, 50);
 
-  const toggleCareer = useCallback((careerId: CareerId) => {
+    return () => window.clearTimeout(timer);
+  }, [state]);
+
+  const toggleCareer = useCallback((careerId: string) => {
     setState((current) => {
-      const exists = current.selectedCareers.includes(careerId)
+      const exists = current.selectedCareers.includes(careerId);
 
       if (exists) {
         return {
           ...current,
-          selectedCareers: current.selectedCareers.filter((item) => item !== careerId),
-        }
+          selectedCareers: current.selectedCareers.filter(
+            (item) => item !== careerId,
+          ),
+        };
       }
 
       if (current.selectedCareers.length >= 2) {
-        return current
+        return current;
       }
 
       return {
         ...current,
         selectedCareers: [...current.selectedCareers, careerId],
-      }
-    })
-  }, [])
+      };
+    });
+  }, []);
 
   const toggleTask = useCallback((taskId: string) => {
     setState((current) => {
-      const completed = current.completedTasks.includes(taskId)
+      const completed = current.completedTasks.includes(taskId);
 
       return {
         ...current,
         completedTasks: completed
           ? current.completedTasks.filter((item) => item !== taskId)
           : [...current.completedTasks, taskId],
-      }
-    })
-  }, [])
+      };
+    });
+  }, []);
 
   const toggleSavedCourse = useCallback((courseId: string) => {
     setState((current) => {
-      const exists = current.savedCourses.includes(courseId)
+      const exists = current.savedCourses.includes(courseId);
 
       return {
         ...current,
         savedCourses: exists
           ? current.savedCourses.filter((item) => item !== courseId)
           : [...current.savedCourses, courseId],
-      }
-    })
-  }, [])
+      };
+    });
+  }, []);
 
   const setProfile = useCallback((profile: ProfileState) => {
-    setState((current) => ({ ...current, profile }))
-  }, [])
+    setState((current) => ({ ...current, profile }));
+  }, []);
 
-  const setComparisonTab = useCallback((tab: string) => {
-    setState((current) => ({ ...current, selectedComparisonTab: tab }))
-  }, [])
+  const setComparisonTab = useCallback((tab: ComparisonTab) => {
+    setState((current) => ({ ...current, selectedComparisonTab: tab }));
+  }, []);
 
   const setIsLoading = useCallback((value: boolean) => {
-    setState((current) => ({ ...current, isLoading: value }))
-  }, [])
+    setState((current) => ({ ...current, isLoading: value }));
+  }, []);
 
   const setAuthUser = useCallback((user: AuthUser | null) => {
-    setState((current) => ({ ...current, authUser: user }))
-  }, [])
+    setState((current) => ({ ...current, authUser: user }));
+  }, []);
 
   const updateAuthUser = useCallback((updates: Partial<AuthUser>) => {
     setState((current) => {
-      if (!current.authUser) return current
-      return { ...current, authUser: { ...current.authUser, ...updates } }
-    })
-  }, [])
+      if (!current.authUser) {
+        return current;
+      }
 
-  const value: AppStateValue = {
-    ...state,
-    setProfile,
-    toggleCareer,
-    toggleTask,
-    toggleSavedCourse,
-    setComparisonTab,
-    setIsLoading,
-    setAuthUser,
-    updateAuthUser,
-  }
+      return {
+        ...current,
+        authUser: {
+          ...current.authUser,
+          ...updates,
+        },
+      };
+    });
+  }, []);
 
-  return <AppStateContext.Provider value={value}>{children}</AppStateContext.Provider>
+  const value: AppStateValue = useMemo(
+    () => ({
+      ...state,
+      setProfile,
+      toggleCareer,
+      toggleTask,
+      toggleSavedCourse,
+      setComparisonTab,
+      setIsLoading,
+      setAuthUser,
+      updateAuthUser,
+    }),
+    [
+      state,
+      setProfile,
+      toggleCareer,
+      toggleTask,
+      toggleSavedCourse,
+      setComparisonTab,
+      setIsLoading,
+      setAuthUser,
+      updateAuthUser,
+    ],
+  );
+
+  return (
+    <AppStateContext.Provider value={value}>
+      {children}
+    </AppStateContext.Provider>
+  );
 }

@@ -1,9 +1,9 @@
-import type { Career } from '../../types/domain'
+import type { CareerViewModel } from "../../types/domain";
 
 type CompareHeroProps = {
-  first: Career
-  second: Career
-}
+  first: CareerViewModel;
+  second: CareerViewModel;
+};
 
 export default function CompareHero({ first, second }: CompareHeroProps) {
   return (
@@ -22,5 +22,5 @@ export default function CompareHero({ first, second }: CompareHeroProps) {
         <p>{second.description}</p>
       </div>
     </div>
-  )
+  );
 }
