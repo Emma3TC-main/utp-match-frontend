@@ -10,6 +10,15 @@ export type ProfileState = {
   worry: string
 }
 
+export type AuthUser = {
+  id: string
+  email: string
+  name: string
+  phone?: string
+  description?: string
+  photo?: string
+}
+
 export type AppStateValue = {
   profile: ProfileState
   selectedCareers: CareerId[]
@@ -17,15 +26,18 @@ export type AppStateValue = {
   savedCourses: string[]
   selectedComparisonTab: string
   isLoading: boolean
+  authUser: AuthUser | null
   setProfile: (profile: ProfileState) => void
   toggleCareer: (careerId: CareerId) => void
   toggleTask: (taskId: string) => void
   toggleSavedCourse: (courseId: string) => void
   setComparisonTab: (tab: string) => void
   setIsLoading: (value: boolean) => void
+  setAuthUser: (user: AuthUser | null) => void
+  updateAuthUser: (updates: Partial<AuthUser>) => void
 }
 
-export type AppStateSnapshot = Omit<AppStateValue, 'setProfile' | 'toggleCareer' | 'toggleTask' | 'toggleSavedCourse' | 'setComparisonTab' | 'setIsLoading'>
+export type AppStateSnapshot = Omit<AppStateValue, 'setProfile' | 'toggleCareer' | 'toggleTask' | 'toggleSavedCourse' | 'setComparisonTab' | 'setIsLoading' | 'setAuthUser' | 'updateAuthUser'>
 
 export const STORAGE_KEY = 'utp-match-state-v1'
 
@@ -45,6 +57,7 @@ export const defaultState: AppStateSnapshot = {
   savedCourses: ['algoritmos'],
   selectedComparisonTab: 'Resumen',
   isLoading: false,
+  authUser: null,
 }
 
 export const AppStateContext = createContext<AppStateValue | null>(null)
@@ -71,6 +84,7 @@ export function readStoredState(): AppStateSnapshot {
       savedCourses: parsed.savedCourses ?? defaultState.savedCourses,
       selectedComparisonTab: parsed.selectedComparisonTab ?? defaultState.selectedComparisonTab,
       isLoading: parsed.isLoading ?? defaultState.isLoading,
+      authUser: parsed.authUser ?? defaultState.authUser,
     }
   } catch {
     return defaultState
