@@ -22,9 +22,8 @@ import {
   Surface,
   TaskItem,
 } from './components/ui'
-import LoginPage from './pages/LoginPage'
-import RegisterPage from './pages/RegisterPage'
 import { actionTasks, adminCatalog, careers, comparisonTabs } from './data/demo'
+import RegisterPage from './pages/RegisterPage'
 
 function App() {
   return (
@@ -34,9 +33,68 @@ function App() {
   )
 }
 
+function LoginPage() {
+  const navigate = useNavigate()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault()
+    // Al autenticarse con éxito, viaja a la pantalla de datos
+    navigate('/onboarding') 
+  }
+
+  return (
+    <AppFrame title="Ingresa a tu cuenta de UTP Match" subtitle="Conéctate para guardar tus mallas curriculares, misiones y reportes de forma segura.">
+      <Surface className="surface--stack surface--raised max-w-md mx-auto">
+        <ScreenTitleBlock title="¡Hola de nuevo!" body="Elige tu método de acceso preferido para continuar." />
+        
+        {/* 🔴 BOTÓN AUTOMÁTICO DE GOOGLE */}
+        <button 
+          type="button" 
+          onClick={() => navigate('/onboarding')}
+          className="w-full min-h-[48px] border border-slate-300 rounded-[14px] bg-white text-[#13233a] font-bold flex items-center justify-center gap-3 transition-all active:scale-[0.985] cursor-pointer p-3 shadow-sm hover:bg-slate-50"
+        >
+          <svg className="w-5 h-5" viewBox="0 0 24 24">
+            <path fill="#EA4335" d="M12 5.04c1.66 0 3.2.57 4.42 1.74l3.3-3.3C17.74 1.58 15.06 1 12 1 7.24 1 3.2 3.74 1.25 7.75l3.85 3A7.02 7.02 0 0 1 12 5.04z"/>
+            <path fill="#4285F4" d="M23.49 12.27c0-.81-.07-1.59-.2-2.36H12v4.51h6.46a5.54 5.54 0 0 1-2.4 3.64l3.73 2.89c2.18-2 3.7-4.97 3.7-8.68z"/>
+            <path fill="#FBBC05" d="M5.1 14.75a7.04 7.04 0 0 1 0-5.5l-3.85-3a11.94 11.94 0 0 0 0 11.5l3.85-3z"/>
+            <path fill="#34A853" d="M12 23c3.24 0 5.97-1.08 7.96-2.91l-3.73-2.89a7.42 7.42 0 0 1-4.23 1.2c-3.66 0-6.76-2.47-7.86-5.8l-3.87 3A11.96 11.96 0 0 0 12 23z"/>
+          </svg>
+          <span>Continuar con Google</span>
+        </button>
+
+        <div className="flex items-center my-2 gap-3 text-slate-400 text-xs justify-center uppercase font-bold tracking-wider">
+          <div className="h-[1px] bg-slate-200 w-12"></div>
+          <span>o usa tu correo</span>
+          <div className="h-[1px] bg-slate-200 w-12"></div>
+        </div>
+
+        {/* 🔴 FORMULARIO MANUAL */}
+        <form onSubmit={handleLogin} className="form-stack">
+          <label>
+            <span>Correo electrónico</span>
+            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="correo@ejemplo.com" />
+          </label>
+          <label>
+            <span>Contraseña</span>
+            <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
+          </label>
+          
+          <div className="pt-2">
+            <PrimaryButton type="submit" className="w-full">Iniciar Sesión / Registrarse</PrimaryButton>
+          </div>
+        </form>
+      </Surface>
+    </AppFrame>
+  )
+}
+
 function AppRouter() {
   const location = useLocation()
   const { isLoading, setIsLoading } = useAppContext()
+
+  const [isDark, setIsDark] = useState(() => window.localStorage.getItem('utp-match-theme') === 'dark')
 
   useEffect(() => {
     setIsLoading(true)
@@ -45,10 +103,18 @@ function AppRouter() {
     return () => window.clearTimeout(timer)
   }, [location.pathname, setIsLoading])
 
+  useEffect(() => {
+    const handleThemeChange = () => {
+      setIsDark(window.localStorage.getItem('utp-match-theme') === 'dark')
+    }
+    window.addEventListener('utp-theme-toggle', handleThemeChange)
+    return () => window.removeEventListener('utp-theme-toggle', handleThemeChange)
+  }, [])
+
   const showBottomNav = ['/home', '/compare', '/compare/result', '/match', '/plan', '/summary', '/admin'].some((route) => location.pathname.startsWith(route))
 
   return (
-    <div className="app-stage">
+    <div className={`app-stage ${isDark ? 'dark-theme' : 'light-theme'}`}>
       <AnimatePresence mode="wait">
         <motion.div
           key={location.pathname}
@@ -59,21 +125,25 @@ function AppRouter() {
           className="route-layer"
         >
           <Routes location={location}>
-            <Route path="/" element={<Navigate to="/welcome" replace />} />
-            <Route path="/welcome" element={<WelcomePage />} />
-            <Route path="/onboarding" element={<OnboardingPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/home" element={<HomePage />} />
-            <Route path="/compare" element={<SelectorPage />} />
-            <Route path="/compare/result" element={<ComparePage />} />
-            <Route path="/course/:courseId" element={<CoursePage />} />
-            <Route path="/match" element={<MatchPage />} />
-            <Route path="/plan" element={<PlanPage />} />
-            <Route path="/summary" element={<SummaryPage />} />
-            <Route path="/admin" element={<AdminPage />} />
-            <Route path="*" element={<Navigate to="/welcome" replace />} />
-          </Routes>
+  <Route path="/" element={<Navigate to="/welcome" replace />} />
+  <Route path="/welcome" element={<WelcomePage />} />
+
+  <Route path="/login" element={<LoginPage />} />
+
+  <Route path="/register" element={<RegisterPage />} />
+
+  <Route path="/onboarding" element={<OnboardingPage />} />
+
+  <Route path="/home" element={<HomePage />} />
+  <Route path="/compare" element={<SelectorPage />} />
+  <Route path="/compare/result" element={<ComparePage />} />
+  <Route path="/course/:courseId" element={<CoursePage />} />
+  <Route path="/match" element={<MatchPage />} />
+  <Route path="/plan" element={<PlanPage />} />
+  <Route path="/summary" element={<SummaryPage />} />
+  <Route path="/admin" element={<AdminPage />} />
+  <Route path="*" element={<Navigate to="/welcome" replace />} />
+</Routes>
         </motion.div>
       </AnimatePresence>
 
@@ -110,9 +180,10 @@ function WelcomePage() {
             hables con seguridad con tu familia, tutor u orientador. Sin tablas, sin jerga, sin esperas.
           </p>
           <div className="hero-actions">
-            <PrimaryButton onClick={() => navigate('/onboarding')}>Iniciar mi match</PrimaryButton>
-            <SecondaryButton onClick={() => navigate('/compare')}>Ver comparador</SecondaryButton>
-          </div>
+    <PrimaryButton onClick={() => navigate('/login')}>Empezar mi match</PrimaryButton>
+    
+    <SecondaryButton onClick={() => navigate('/compare')}>Ya tengo carreras en mente</SecondaryButton>
+  </div>
           <div className="hero-badges">
             <span>Entiende qué hace diferente cada carrera</span>
             <span>Explora sin miedo a equivocarte</span>
@@ -207,7 +278,9 @@ function OnboardingPage() {
   const navigate = useNavigate()
   const { profile, setProfile } = useAppContext()
   const [step, setStep] = useState(0)
-  const [name, setName] = useState(profile.name)
+const [name, setName] = useState(() => {
+  return window.localStorage.getItem('demo-user-name') || profile.name || ''
+})
   const [year, setYear] = useState(profile.year)
   const [interests, setInterests] = useState(profile.interests)
   const [skills, setSkills] = useState(profile.skills)

@@ -11,7 +11,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return setError('Correo inválido')
@@ -20,8 +20,12 @@ export default function LoginPage() {
     setLoading(true)
     setTimeout(() => {
       setLoading(false)
-      // Simulación: establecer usuario en contexto
-      setAuthUser({ id: Math.random().toString(36).slice(2), email, name: email.split('@')[0], phone: '', description: '', photo: '' })
+      
+      const computedName = email.split('@')[0]
+      window.localStorage.setItem('demo-user-name', computedName) 
+      
+      setAuthUser({ id: Math.random().toString(36).slice(2), email, name: computedName, phone: '', description: '', photo: '' })
+      
       navigate('/home')
     }, 900)
   }

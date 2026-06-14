@@ -1467,7 +1467,7 @@ button {
 .route-loader {
   position: fixed;
   inset: 0;
-  display: grid;
+  display: none;
   place-items: center;
   background: rgba(245, 248, 251, 0.34);
   backdrop-filter: blur(5px);
@@ -2664,16 +2664,33 @@ body {
     display: flex;
   }
 } 
+
 .dark-theme,
 .dark-theme body,
-.dark-theme .app-stage {
+.dark-theme .app-stage,
+.dark-theme .route-layer,
+.dark-theme .route-loader,
+.dark-theme .app-shell,
+.dark-theme .app-phone,
+.dark-theme .app-content {
   background: #0b1329; 
+  background-color: #0b1329;
   background-image: none; 
   color: #f8fafc;
 }
 
+.dark-theme .route-loader *, 
+.dark-theme .skeleton-line, 
+.dark-theme .skeleton-box, 
+.dark-theme .skeleton-cover {
+  background: #111c34;
+  background-color: #111c34;
+  border-color: #1e293b;
+}
+
 .dark-theme .topbar {
   background: #111c34;
+  background-color: #111c34;
   border-bottom-color: #1e293b;
 }
 
@@ -2687,7 +2704,8 @@ body {
 .dark-theme .link-card,
 .dark-theme .task-item,
 .dark-theme .community-card,
-.dark-theme .share-card {
+.dark-theme .share-card,
+.dark-theme .route-loader__card { 
   background: #111c34;
   background-color: #111c34;
   border-color: #1e293b;
@@ -2721,7 +2739,7 @@ body {
 
 .light-theme .topbar {
   background: rgba(255, 255, 255, 0.96);
-  border-bottom-color: var(--soft-border) ;
+  border-bottom-color: var(--soft-border);
 }
 
 /* ========== FLOATING AUTH MENU ========== */
