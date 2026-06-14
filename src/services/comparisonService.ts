@@ -1,4 +1,5 @@
 import { apiClient } from "../lib/apiClient";
+import { endpoints } from "../lib/endpoints";
 import { schemaGuard } from "../lib/schemaGuard";
 import type {
   CareerComparisonRequestDto,
@@ -24,7 +25,7 @@ export const comparisonService = {
         firstCareer: input.firstCareer,
         secondCareer: input.secondCareer,
         selectedTab: "Resumen",
-        summary: `${input.firstCareer.name} se orienta más a ${input.firstCareer.area}; ${input.secondCareer.name} se orienta más a ${input.secondCareer.area}.`,
+        summary: `${input.firstCareer.name} vs. ${input.secondCareer.name}`,
         dimensions: {
           left: input.firstCareer.intensity,
           right: input.secondCareer.intensity,
@@ -41,7 +42,7 @@ export const comparisonService = {
         ],
         nextBestActions: [
           "Revisar cursos clave",
-          "Guardar una comparación",
+          "Guardar comparación",
           "Conversar con un estudiante",
         ],
         createdAt: new Date().toISOString(),
@@ -60,7 +61,7 @@ export const comparisonService = {
     const json = await apiClient.post<
       CareerComparisonResponseDto,
       CareerComparisonRequestDto
-    >("/career-comparisons", body);
+    >(endpoints.comparisons.create, body);
 
     return schemaGuard.parseComparisonResponse(
       json,

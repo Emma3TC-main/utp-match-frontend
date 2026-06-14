@@ -27,8 +27,8 @@ export type Course = {
   explanation: string;
   difficulty: string[];
   impact: string;
+  syllabusId?: string;
 
-  // Props visuales / frontend
   area?: string;
   intensityLabel?: string;
   skill?: string;

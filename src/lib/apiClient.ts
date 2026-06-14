@@ -1,6 +1,4 @@
-// src/lib/apiClient.ts
-
-const API_BASE_URL = import.meta.env.VITE_API_URL ?? "";
+const API_BASE_URL = (import.meta.env.VITE_API_URL ?? "").replace(/\/$/, "");
 
 type RequestOptions = {
   headers?: HeadersInit;
@@ -34,11 +32,29 @@ class ApiClient {
 
   async post<T, B = unknown>(
     path: string,
-    body: B,
+    body?: B,
     options?: RequestOptions,
   ): Promise<T> {
     const response = await fetch(`${API_BASE_URL}${path}`, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...this.attachAuthHeaders(),
+        ...options?.headers,
+      },
+      body: body === undefined ? undefined : JSON.stringify(body),
+    });
+
+    return this.handleResponse<T>(response);
+  }
+
+  async patch<T, B = unknown>(
+    path: string,
+    body: B,
+    options?: RequestOptions,
+  ): Promise<T> {
+    const response = await fetch(`${API_BASE_URL}${path}`, {
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
         ...this.attachAuthHeaders(),
@@ -54,6 +70,10 @@ class ApiClient {
     if (!response.ok) {
       const message = await response.text();
       throw new Error(message || `Error HTTP ${response.status}`);
+    }
+
+    if (response.status === 204) {
+      return undefined as T;
     }
 
     return response.json() as Promise<T>;

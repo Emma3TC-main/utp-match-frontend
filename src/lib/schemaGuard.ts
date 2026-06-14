@@ -1,11 +1,15 @@
+// src/lib/schemaGuard.ts
+
 import type {
   CareerComparisonResponseDto,
+  CareerCurriculumResponseDto,
   SyllabusExplanationResponseDto,
 } from "../types/api";
 import type {
   CareerViewModel,
   ComparisonViewModel,
   CourseViewModel,
+  CycleViewModel,
   DimensionScores,
   ExplanationViewModel,
 } from "../types/domain";
@@ -52,6 +56,37 @@ export const schemaGuard = {
     }
 
     return json.map((item) => this.parseCareerResponse(item));
+  },
+
+  parseCurriculumResponse(json: unknown): CycleViewModel[] {
+    assertObject(json, "CareerCurriculumResponse");
+
+    const dto = json as CareerCurriculumResponseDto;
+
+    if (!dto.careerId || !dto.careerName || !Array.isArray(dto.cycles)) {
+      throw new Error("La malla curricular recibida está incompleta.");
+    }
+
+    return dto.cycles.map((cycle) => ({
+      cycle: `Ciclo ${cycle.cycleNumber}`,
+      courses: cycle.courses.map(
+        (course): CourseViewModel => ({
+          id: String(course.courseId),
+          syllabusId: course.syllabusId ? String(course.syllabusId) : undefined,
+          cycle: `Ciclo ${cycle.cycleNumber}`,
+          name: course.name,
+          area: course.area,
+          intensityLabel: "Media",
+          explanation:
+            course.summary ?? "Este curso forma parte de la malla curricular.",
+          impact:
+            course.summary ??
+            "Te ayuda a desarrollar bases importantes para la carrera.",
+          difficulty: ["Intensidad por confirmar"],
+          skill: "Habilidad aplicada",
+        }),
+      ),
+    }));
   },
 
   parseComparisonResponse(

@@ -1,5 +1,6 @@
 import { careers } from "../data/demo";
 import { apiClient } from "../lib/apiClient";
+import { endpoints } from "../lib/endpoints";
 import { schemaGuard } from "../lib/schemaGuard";
 import type {
   CareerViewModel,
@@ -15,13 +16,20 @@ export const careerService = {
       return careers;
     }
 
-    const json = await apiClient.get<unknown>("/careers");
+    const json = await apiClient.get<unknown>(endpoints.careers.list);
     return schemaGuard.parseCareerListResponse(json);
   },
 
   async getCareerById(careerId: string): Promise<CareerViewModel | null> {
-    const allCareers = await this.getCareers();
-    return allCareers.find((career) => career.id === careerId) ?? null;
+    if (USE_MOCKS) {
+      return careers.find((career) => career.id === careerId) ?? null;
+    }
+
+    const json = await apiClient.get<unknown>(
+      endpoints.careers.detail(careerId),
+    );
+
+    return schemaGuard.parseCareerResponse(json);
   },
 
   async getCourseById(courseId: string): Promise<CourseViewModel | null> {
@@ -35,24 +43,32 @@ export const careerService = {
   },
 
   async getCurriculumByCareerId(careerId: string): Promise<CycleViewModel[]> {
-    const career = await this.getCareerById(careerId);
+    if (USE_MOCKS) {
+      const career = careers.find((item) => item.id === careerId);
 
-    if (!career) {
-      return [];
+      if (!career) {
+        return [];
+      }
+
+      const grouped = career.courses.reduce<Record<string, CourseViewModel[]>>(
+        (acc, course) => {
+          acc[course.cycle] = acc[course.cycle] ?? [];
+          acc[course.cycle].push(course);
+          return acc;
+        },
+        {},
+      );
+
+      return Object.entries(grouped).map(([cycle, courses]) => ({
+        cycle,
+        courses,
+      }));
     }
 
-    const grouped = career.courses.reduce<Record<string, CourseViewModel[]>>(
-      (acc, course) => {
-        acc[course.cycle] = acc[course.cycle] ?? [];
-        acc[course.cycle].push(course as CourseViewModel);
-        return acc;
-      },
-      {},
+    const json = await apiClient.get<unknown>(
+      endpoints.careers.curriculum(careerId),
     );
 
-    return Object.entries(grouped).map(([cycle, courses]) => ({
-      cycle,
-      courses,
-    }));
+    return schemaGuard.parseCurriculumResponse(json);
   },
 };

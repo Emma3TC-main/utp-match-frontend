@@ -1,4 +1,7 @@
+// src/services/syllabusService.ts
+
 import { apiClient } from "../lib/apiClient";
+import { endpoints } from "../lib/endpoints";
 import { schemaGuard } from "../lib/schemaGuard";
 import type {
   SyllabusExplanationRequestDto,
@@ -19,13 +22,13 @@ export const syllabusService = {
   ): Promise<ExplanationViewModel> {
     if (USE_MOCKS) {
       return {
-        syllabusId: input.course.id,
+        syllabusId: input.course.syllabusId ?? input.course.id,
         course: input.course,
         summary: input.course.explanation,
         plainLanguageExplanation: input.course.explanation,
         whyItMatters: input.course.impact,
         difficulty: input.course.difficulty,
-        skillsYouBuild: [input.course.skill],
+        skillsYouBuild: [input.course.skill ?? "Habilidad aplicada"],
         exampleActivities: [
           "Resolver ejercicios cortos",
           "Revisar casos prácticos",
@@ -49,10 +52,12 @@ export const syllabusService = {
       includeFitComment: true,
     };
 
+    const syllabusId = input.course.syllabusId ?? input.course.id;
+
     const json = await apiClient.post<
       SyllabusExplanationResponseDto,
       SyllabusExplanationRequestDto
-    >(`/syllabus/${input.course.id}/explain`, body);
+    >(endpoints.syllabi.explain(syllabusId), body);
 
     return schemaGuard.parseSyllabusExplanationResponse(json, input.course);
   },
