@@ -1,78 +1,117 @@
-import React, { useState } from 'react'
-import { Mail, Lock } from 'lucide-react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useAppContext } from '../state/appState'
+import type { FormEvent } from "react";
+import { useState } from "react";
+import { ArrowRight, Mail, Sparkles, UserRound } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { authService } from "../services/authService";
+import { useAppContext } from "../state/appState";
 
 export default function RegisterPage() {
-  const navigate = useNavigate()
-  const { setAuthUser } = useAppContext()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [name, setName] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate();
+  const { patchProfile, setAuthUser } = useAppContext();
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setError(null)
-    if (!name.trim()) return setError('Ingresa tu nombre')
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return setError('Correo inválido')
-    if (password.length < 6) return setError('La contraseña debe tener al menos 6 caracteres')
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+    setError(null);
 
-    setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-      
-      window.localStorage.setItem('demo-user-name', name) 
-      
-      setAuthUser({ id: Math.random().toString(36).slice(2), email, name, phone: '', description: '', photo: '' })
-      
-      navigate('/onboarding')
-    }, 900)
-  }
+    if (!name.trim()) {
+      setError("Falta tu nombre.");
+      return;
+    }
+
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+      setError("Correo invalido.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const session = await authService.createGuestSession({
+        displayName: name.trim(),
+        metadata: {
+          email,
+          flow: "register-form",
+        },
+      });
+
+      window.localStorage.setItem("utp-match-token", session.accessToken);
+      setAuthUser({
+        id: String(session.user.id),
+        email,
+        name: session.user.displayName ?? name.trim(),
+        role: session.user.role,
+        studentProfileId: session.user.studentProfileId,
+      });
+      patchProfile({
+        userId: String(session.user.id),
+        name: name.trim(),
+      });
+
+      navigate("/onboarding");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Intenta otra vez.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="auth-page auth-page--brand">
-      <div className="auth-card">
-        <h2>Crear cuenta</h2>
-        <p className="muted">Regístrate y guarda tu plan personal.</p>
+    <div className="auth-page auth-page--brand auth-page--visual">
+      <div className="auth-card auth-card--visual">
+        <div className="auth-visual-badge">
+          <Sparkles size={17} />
+          Guarda avance
+        </div>
+        <h2>Crea tu sesion</h2>
+        <p className="muted">Rapido. Sin clave por ahora.</p>
 
-          <form onSubmit={handleSubmit} className="auth-form">
-            <label>
-              <span>Nombre</span>
-              <div className="input-with-icon">
-                <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Tu nombre" required />
-              </div>
-            </label>
+        <form onSubmit={handleSubmit} className="auth-form">
+          <label>
+            <span>Nombre</span>
+            <div className="input-with-icon">
+              <UserRound size={16} />
+              <input
+                type="text"
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+                placeholder="Tu nombre"
+                required
+              />
+            </div>
+          </label>
 
           <label>
             <span>Correo</span>
             <div className="input-with-icon">
               <Mail size={16} />
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="tu@correo.com" required />
-            </div>
-          </label>
-
-          <label>
-            <span>Contraseña</span>
-            <div className="input-with-icon">
-              <Lock size={16} />
-              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required />
+              <input
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                placeholder="tu@correo.com"
+                required
+              />
             </div>
           </label>
 
           {error ? <div className="auth-error">{error}</div> : null}
 
-          <button className="btn btn-primary" type="submit" disabled={loading}>
-            {loading ? <span className="btn-loading" aria-hidden /> : 'Crear cuenta'}
+          <button className="btn btn-primary auth-submit" type="submit" disabled={loading}>
+            {loading ? <span className="btn-loading" aria-hidden /> : "Crear"}
+            {!loading ? <ArrowRight size={16} /> : null}
           </button>
         </form>
 
         <div className="auth-footer">
-          <span>¿Ya tienes cuenta?</span>
-          <Link to="/login" className="link">Inicia sesión</Link>
+          <span>Ya tienes?</span>
+          <Link to="/login" className="link">
+            Entrar
+          </Link>
         </div>
       </div>
     </div>
-  )
+  );
 }

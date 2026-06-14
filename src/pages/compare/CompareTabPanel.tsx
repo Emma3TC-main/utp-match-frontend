@@ -1,4 +1,15 @@
-import { ChevronRight } from "lucide-react";
+import {
+  ArrowRight,
+  BookOpen,
+  BrainCircuit,
+  BriefcaseBusiness,
+  CheckCircle2,
+  ChevronRight,
+  Code2,
+  Lightbulb,
+  MessageCircle,
+  TrendingUp,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   IntensityBar,
@@ -14,6 +25,19 @@ type CompareTabPanelProps = {
   second: CareerViewModel;
 };
 
+const intensityRows = [
+  { key: "mathematics", label: "Mate", icon: BrainCircuit, color: "var(--blue)" },
+  { key: "programming", label: "Codigo", icon: Code2, color: "var(--teal)" },
+  { key: "management", label: "Gestion", icon: BriefcaseBusiness, color: "var(--lime)" },
+  { key: "communication", label: "Comunica", icon: MessageCircle, color: "var(--sky)" },
+  { key: "logic", label: "Logica", icon: Lightbulb, color: "var(--blue-strong)" },
+] as const;
+
+function compactText(value: string, max = 130): string {
+  if (value.length <= max) return value;
+  return `${value.slice(0, max - 3).trim()}...`;
+}
+
 export default function CompareTabPanel({
   tab,
   first,
@@ -25,17 +49,39 @@ export default function CompareTabPanel({
   if (tab === "Resumen") {
     return (
       <>
-        <div className="compare-grid">
+        <div className="compare-grid compare-grid--visual">
           <MatchScore career={first} />
           <MatchScore career={second} />
         </div>
 
-        <Surface>
+        <div className="quick-compare-grid">
+          {careersToCompare.map((career) => (
+            <Surface key={career.id} className="quick-compare-card">
+              <span className="quick-compare-card__icon">
+                <TrendingUp size={18} />
+              </span>
+              <div>
+                <strong>{career.name}</strong>
+                <p>{compactText(career.insight, 96)}</p>
+              </div>
+            </Surface>
+          ))}
+        </div>
+
+        <Surface className="summary-snap summary-snap--visual">
           <ScreenTitleBlock
-            title="Diferencia rápida"
-            body={`${first.name} se apoya más en ${first.area}. ${second.name} se orienta más a ${second.area}.`}
+            title="Diferencia rapida"
+            body={`${first.area} vs. ${second.area}`}
           />
-          <p className="insight-copy">{first.insight}</p>
+          <div className="visual-chip-row">
+            {[first.skills[0], first.skills[1], second.skills[0], second.skills[1]]
+              .filter(Boolean)
+              .map((skill) => (
+                <span key={skill} className="mini-chip">
+                  {skill}
+                </span>
+              ))}
+          </div>
         </Surface>
       </>
     );
@@ -45,33 +91,27 @@ export default function CompareTabPanel({
     return (
       <div className="compare-columns">
         {careersToCompare.map((career) => (
-          <Surface key={career.id}>
-            <h3>{career.name}</h3>
+          <Surface key={career.id} className="visual-panel">
+            <div className="post-section-title post-section-title--small">
+              <span>
+                <BrainCircuit size={17} />
+              </span>
+              <div>
+                <strong>{career.name}</strong>
+                <p>Niveles clave</p>
+              </div>
+            </div>
 
-            <IntensityBar
-              label="Matemática"
-              value={career.intensity.mathematics}
-            />
-            <IntensityBar
-              label="Programación"
-              value={career.intensity.programming}
-              accent="var(--teal)"
-            />
-            <IntensityBar
-              label="Gestión"
-              value={career.intensity.management}
-              accent="var(--lime)"
-            />
-            <IntensityBar
-              label="Comunicación"
-              value={career.intensity.communication}
-              accent="var(--sky)"
-            />
-            <IntensityBar
-              label="Pensamiento lógico"
-              value={career.intensity.logic}
-              accent="var(--blue-strong)"
-            />
+            {intensityRows.map(({ key, label, icon: Icon, color }) => (
+              <div key={key} className="intensity-row-with-icon">
+                <Icon size={16} />
+                <IntensityBar
+                  label={label}
+                  value={career.intensity[key]}
+                  accent={color}
+                />
+              </div>
+            ))}
           </Surface>
         ))}
       </div>
@@ -82,21 +122,32 @@ export default function CompareTabPanel({
     return (
       <div className="compare-columns">
         {careersToCompare.map((career) => (
-          <Surface key={career.id}>
-            <h3>{career.name}</h3>
+          <Surface key={career.id} className="visual-panel">
+            <div className="post-section-title post-section-title--small">
+              <span>
+                <BookOpen size={17} />
+              </span>
+              <div>
+                <strong>{career.name}</strong>
+                <p>Cursos para revisar</p>
+              </div>
+            </div>
 
             <div className="course-stack">
-              {career.courses.map((course) => (
+              {career.courses.slice(0, 4).map((course) => (
                 <button
                   key={course.id}
-                  className="course-compact"
+                  className="course-compact course-compact--visual course-compact--icon"
                   onClick={() => navigate(`/course/${course.id}`)}
                   type="button"
                 >
+                  <span className="course-compact__icon">
+                    <BookOpen size={16} />
+                  </span>
                   <div>
                     <span className="badge badge--soft">{course.cycle}</span>
                     <strong>{course.name}</strong>
-                    <p>{course.explanation}</p>
+                    <p>{compactText(course.explanation, 84)}</p>
                   </div>
 
                   <ChevronRight size={16} />
@@ -113,22 +164,34 @@ export default function CompareTabPanel({
     return (
       <div className="compare-columns">
         {careersToCompare.map((career) => (
-          <Surface key={career.id}>
-            <h3>{career.name}</h3>
+          <Surface key={career.id} className="visual-panel">
+            <div className="post-section-title post-section-title--small">
+              <span>
+                <CheckCircle2 size={17} />
+              </span>
+              <div>
+                <strong>{career.name}</strong>
+                <p>Lo que destaca</p>
+              </div>
+            </div>
 
-            <div className="chip-row">
-              {career.skills.map((skill) => (
-                <span key={skill} className="mini-chip">
+            <div className="skill-orbit">
+              {career.skills.slice(0, 6).map((skill) => (
+                <span key={skill} className="mini-chip mini-chip--visual">
+                  <BrainCircuit size={12} />
                   {skill}
                 </span>
               ))}
             </div>
 
-            <div className="detail-list">
-              <strong>Fortalezas</strong>
+            <div className="detail-list detail-list--icon">
+              <strong>Fuerte</strong>
 
-              {career.strengths.map((item) => (
-                <span key={item}>{item}</span>
+              {career.strengths.slice(0, 4).map((item) => (
+                <span key={item}>
+                  <CheckCircle2 size={14} />
+                  {item}
+                </span>
               ))}
             </div>
           </Surface>
@@ -138,15 +201,29 @@ export default function CompareTabPanel({
   }
 
   return (
-    <Surface>
-      <ScreenTitleBlock
-        title="Insight final"
-        body="No se trata de decirte qué elegir, sino de ayudarte a conversar mejor."
-      />
+    <Surface className="summary-snap summary-snap--visual">
+      <div className="post-section-title post-section-title--small">
+        <span>
+          <Lightbulb size={17} />
+        </span>
+        <div>
+          <strong>Idea clave</strong>
+          <p>No elige por ti. Te ayuda a conversar mejor.</p>
+        </div>
+      </div>
 
-      <p className="insight-copy">
-        {first.insight} {second.insight}
-      </p>
+      <div className="next-action-grid">
+        <button type="button" onClick={() => navigate("/match")}>
+          <TrendingUp size={16} />
+          Ver match
+          <ArrowRight size={14} />
+        </button>
+        <button type="button" onClick={() => navigate("/compare")}>
+          <BookOpen size={16} />
+          Comparar otra
+          <ArrowRight size={14} />
+        </button>
+      </div>
     </Surface>
   );
 }

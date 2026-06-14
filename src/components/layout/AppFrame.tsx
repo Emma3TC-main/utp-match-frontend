@@ -2,13 +2,11 @@ import { LayoutList, Moon, Sun, UserRound } from "lucide-react";
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { useAppContext } from "../../state/appState";
 import { TOPBAR_NAV_ITEMS, USER_ICON_ROUTES } from "../constants/navigation";
 import { useThemeMode } from "../hooks/useThemeMode";
-import { LoginModal } from "../modals/LoginModal";
-import { RegisterModal } from "../modals/RegisterModal";
 import { UserProfileModal } from "../modals/UserProfileModal";
 import { FloatingAuthMenu } from "../navigation/FloatingAuthMenu";
-import { useAppContext } from "../../state/appState";
 import type { ProfileUpdates } from "../types/auth";
 
 export function AppFrame({
@@ -28,45 +26,12 @@ export function AppFrame({
   const location = useLocation();
   const navigate = useNavigate();
   const { isDarkMode, toggleTheme } = useThemeMode();
-
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showSideMenu, setShowSideMenu] = useState(false);
 
   const shouldShowUserIcon = USER_ICON_ROUTES.includes(location.pathname);
   void showHelp;
   void shouldShowUserIcon;
-
-  const handleLoginSubmit = (email: string, password: string) => {
-    // Simulamos login - en producción sería una llamada a API
-    setAuthUser({
-      id: Math.random().toString(),
-      email,
-      name: email.split("@")[0],
-      phone: "",
-      description: "",
-      photo: "",
-    });
-    setShowLoginModal(false);
-  };
-
-  const handleRegisterSubmit = (
-    email: string,
-    password: string,
-    name: string,
-  ) => {
-    // Simulamos registro - en producción sería una llamada a API
-    setAuthUser({
-      id: Math.random().toString(),
-      email,
-      name,
-      phone: "",
-      description: "",
-      photo: "",
-    });
-    setShowRegisterModal(false);
-  };
 
   const handleProfileUpdate = (updates: ProfileUpdates) => {
     updateAuthUser(updates);
@@ -75,14 +40,16 @@ export function AppFrame({
 
   return (
     <div
-      className={`app-shell transition-colors duration-250 ${isDarkMode ? "dark-theme" : "light-theme"}`}
+      className={`app-shell transition-colors duration-250 ${
+        isDarkMode ? "dark-theme" : "light-theme"
+      }`}
     >
       <div className="app-phone">
         <header className="topbar">
           <Link className="topbar__brand" to="/welcome">
             UTP Match
           </Link>
-          <nav className="topbar__nav" aria-label="Navegación principal">
+          <nav className="topbar__nav" aria-label="Navegacion principal">
             {TOPBAR_NAV_ITEMS.map((item) => (
               <NavLink
                 key={item.to}
@@ -96,28 +63,12 @@ export function AppFrame({
             ))}
           </nav>
 
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "12px",
-              justifySelf: "end",
-            }}
-          >
+          <div className="topbar__actions">
             <button
               type="button"
               onClick={toggleTheme}
-              className="flex items-center justify-center w-8 h-8 rounded-full border transition-all active:scale-90 cursor-pointer"
-              style={{
-                color: isDarkMode ? "#f59e0b" : "#475569",
-                backgroundColor: isDarkMode ? "#1e293b" : "#ffffff",
-                borderColor: isDarkMode ? "#334155" : "#cbd5e1",
-                padding: 0,
-                boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-              }}
-              title={
-                isDarkMode ? "Cambiar a Modo Claro" : "Cambiar a Modo Oscuro"
-              }
+              className="theme-toggle"
+              title={isDarkMode ? "Modo claro" : "Modo oscuro"}
             >
               {isDarkMode ? <Sun size={15} /> : <Moon size={15} />}
             </button>
@@ -125,8 +76,8 @@ export function AppFrame({
             <button
               type="button"
               className="topbar__cta topbar__hamburger"
-              onClick={() => setShowSideMenu((s) => !s)}
-              aria-label="Abrir menú"
+              onClick={() => setShowSideMenu((isOpen) => !isOpen)}
+              aria-label="Abrir menu"
             >
               <LayoutList size={18} />
             </button>
@@ -175,13 +126,13 @@ export function AppFrame({
         <footer className="app-footer">
           <div>
             <strong>UTP Match</strong>
-            <span>© 2024 UTP Match. Todos los derechos reservados.</span>
+            <span>2024 UTP Match.</span>
           </div>
-          <nav aria-label="Enlaces legales">
+          <nav aria-label="Enlaces">
             <a href="#">Privacidad</a>
-            <a href="#">Términos</a>
+            <a href="#">Terminos</a>
             <a href="#">Contacto</a>
-            <a href="#">UTP Institucional</a>
+            <a href="#">UTP</a>
           </nav>
         </footer>
 
@@ -192,23 +143,13 @@ export function AppFrame({
             navigate("/login");
             setShowSideMenu(false);
           }}
+          onProfileClick={() => setShowProfileModal(true)}
           authUser={authUser}
           onLogout={() => {
+            window.localStorage.removeItem("utp-match-token");
             setAuthUser(null);
             setShowSideMenu(false);
           }}
-        />
-
-        <LoginModal
-          isOpen={showLoginModal}
-          onClose={() => setShowLoginModal(false)}
-          onSubmit={handleLoginSubmit}
-        />
-
-        <RegisterModal
-          isOpen={showRegisterModal}
-          onClose={() => setShowRegisterModal(false)}
-          onSubmit={handleRegisterSubmit}
         />
 
         <UserProfileModal

@@ -14,6 +14,7 @@ import {
   PlanPage,
   RegisterPage,
   SelectorPage,
+  SharedPage,
   SummaryPage,
   WelcomePage,
 } from "../pages";
@@ -74,6 +75,7 @@ export default function AppRouter() {
             <Route path="/match" element={<MatchPage />} />
             <Route path="/plan" element={<PlanPage />} />
             <Route path="/summary" element={<SummaryPage />} />
+            <Route path="/shared/:token" element={<SharedPage />} />
             <Route path="/admin" element={<AdminPage />} />
             <Route path="*" element={<Navigate to="/welcome" replace />} />
           </Routes>

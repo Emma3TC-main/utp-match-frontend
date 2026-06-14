@@ -1,10 +1,5 @@
-import { actionTasks } from "../data/demo";
-import { apiClient } from "../lib/apiClient";
-import { endpoints } from "../lib/endpoints";
-import type { ActionPlanResponseDto } from "../types/api";
+import { planService } from "./planService";
 import type { PlanTaskViewModel } from "../types/domain";
-
-const USE_MOCKS = import.meta.env.VITE_USE_MOCKS !== "false";
 
 type GetActionPlanInput = {
   planId?: string;
@@ -14,26 +9,16 @@ type GetActionPlanInput = {
 
 export const actionPlanService = {
   async getActionPlan(input: GetActionPlanInput): Promise<PlanTaskViewModel[]> {
-    if (USE_MOCKS || !input.planId) {
-      return actionTasks.map((task) => ({
-        ...task,
-        status: "pending",
-      }));
+    if (input.planId) {
+      const plans = await planService.listPlans(input.studentProfileId);
+      return plans.find((plan) => plan.id === input.planId)?.tasks ?? [];
     }
 
-    const json = await apiClient.get<ActionPlanResponseDto>(
-      endpoints.plans.detail(input.planId),
+    const plans = await planService.listPlans(
+      input.studentProfileId,
+      input.targetCareerId,
     );
 
-    return json.tasks.map((task) => ({
-      id: String(task.id ?? task.title),
-      title: task.title,
-      description: task.description ?? "",
-      priority: "Recomendado",
-      due: task.dueDate ?? "Esta semana",
-      dueDate: task.dueDate,
-      type: task.type,
-      status: task.status,
-    }));
+    return plans[0]?.tasks ?? [];
   },
 };

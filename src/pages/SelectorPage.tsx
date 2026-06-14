@@ -1,5 +1,5 @@
 import { Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   AppFrame,
@@ -16,21 +16,34 @@ import { useAppContext } from "../state/appState";
 
 const CAREER_FILTERS = [
   "Todas",
-  "Ingeniería",
+  "Ingenieria",
   "Negocios",
   "Salud",
   "Derecho",
-  "Psicología",
+  "Psicologia",
 ];
 
 export default function SelectorPage() {
   const navigate = useNavigate();
-  const { selectedCareers, toggleCareer } = useAppContext();
-
+  const { selectedCareers, setSelectedCareers, toggleCareer } = useAppContext();
   const { data: careers, loading, error } = useCareers();
-
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("Todas");
+
+  useEffect(() => {
+    if (loading) {
+      return;
+    }
+
+    const validIds = new Set(careers.map((career) => career.id));
+    const validSelection = selectedCareers.filter((careerId) =>
+      validIds.has(careerId),
+    );
+
+    if (validSelection.length !== selectedCareers.length) {
+      setSelectedCareers(validSelection);
+    }
+  }, [careers, loading, selectedCareers, setSelectedCareers]);
 
   const filteredCareers = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -40,7 +53,6 @@ export default function SelectorPage() {
       const matchQuery = `${career.name} ${career.area}`
         .toLowerCase()
         .includes(normalizedQuery);
-
       const matchFilter =
         filter === "Todas" ||
         career.area.toLowerCase().includes(normalizedFilter) ||
@@ -54,11 +66,7 @@ export default function SelectorPage() {
 
   if (loading) {
     return (
-      <AppFrame
-        title="Cargando carreras..."
-        subtitle="Estamos preparando el catálogo para ti."
-        progress={60}
-      >
+      <AppFrame title="Cargando..." subtitle="Preparando carreras." progress={60}>
         <Surface className="surface--stack">
           <div className="skeleton-line skeleton-line--title" />
           <div className="skeleton-line" />
@@ -73,16 +81,11 @@ export default function SelectorPage() {
 
   if (error) {
     return (
-      <AppFrame
-        title="No pudimos cargar las carreras"
-        subtitle={error}
-        progress={60}
-      >
+      <AppFrame title="No cargo" subtitle={error} progress={60}>
         <Surface className="surface--stack">
-          <p>Intenta nuevamente en unos segundos.</p>
-
+          <p>Intenta otra vez.</p>
           <SecondaryButton onClick={() => window.location.reload()}>
-            Recargar catálogo
+            Recargar
           </SecondaryButton>
         </Surface>
       </AppFrame>
@@ -90,11 +93,7 @@ export default function SelectorPage() {
   }
 
   return (
-    <AppFrame
-      title="Selecciona dos carreras que te llamen la atención."
-      subtitle="Compara planes de estudio, demanda laboral y puntaje de afinidad."
-      progress={60}
-    >
+    <AppFrame title="Elige 2 carreras." subtitle="Toca, compara y decide." progress={60}>
       <Surface className="surface--stack">
         <div className="sticky-search">
           <label className="search-box">
@@ -102,7 +101,7 @@ export default function SelectorPage() {
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Buscar carrera..."
+              placeholder="Buscar..."
             />
           </label>
 
@@ -120,10 +119,10 @@ export default function SelectorPage() {
         </div>
 
         {selectedCareers.length > 0 ? (
-          <div className="selection-summary">
+          <div className="selection-summary selection-summary--visual">
             <div>
-              <span className="eyebrow">Comparando</span>
-              <strong>{selectedCareers.length} de 2 seleccionadas</strong>
+              <span className="eyebrow">Listo</span>
+              <strong>{selectedCareers.length}/2 elegidas</strong>
             </div>
 
             <div className="selection-summary__chips">
@@ -132,7 +131,7 @@ export default function SelectorPage() {
 
                 return (
                   <span key={careerId} className="mini-chip mini-chip--active">
-                    {career?.name ?? "Carrera seleccionada"}
+                    {career?.name ?? "Seleccionada"}
                   </span>
                 );
               })}
@@ -140,11 +139,11 @@ export default function SelectorPage() {
           </div>
         ) : (
           <EmptyState
-            title="Aún no seleccionaste carreras."
-            body="Elige dos opciones para empezar a comparar."
+            title="Elige una."
+            body="Necesitas 2 para comparar."
             action={
               <SecondaryButton onClick={() => setQuery("")}>
-                Explorar carreras
+                Explorar
               </SecondaryButton>
             }
           />
@@ -163,13 +162,13 @@ export default function SelectorPage() {
       </Surface>
 
       <StickyCTA
-        left={<span>Seleccionaste {selectedCareers.length} de 2</span>}
+        left={<span>{selectedCareers.length}/2 elegidas</span>}
         right={
           <PrimaryButton
             disabled={!canCompare}
             onClick={() => navigate("/compare/result")}
           >
-            {canCompare ? "Comparar ahora" : "Selecciona 2 carreras"}
+            {canCompare ? "Comparar" : "Elige 2"}
           </PrimaryButton>
         }
       />

@@ -1,91 +1,170 @@
+import {
+  AlertCircle,
+  ArrowRight,
+  CheckCircle2,
+  HelpCircle,
+  Lightbulb,
+  ShieldAlert,
+  Target,
+  TrendingUp,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   AppFrame,
   MatchScore,
   PrimaryButton,
+  SecondaryButton,
   StickyCTA,
   Surface,
 } from "../components/ui";
-import { careers } from "../data/demo";
+import { useCareers } from "../hooks/useCareers";
 import { useAppContext } from "../state/appState";
-
-const DEFAULT_SELECTED_CAREERS = ["systems", "industrial"];
+import type { CareerViewModel } from "../types/domain";
 
 export default function MatchPage() {
   const navigate = useNavigate();
-  const { selectedCareers } = useAppContext();
-  const selected = selectedCareers.length
-    ? selectedCareers
-    : DEFAULT_SELECTED_CAREERS;
+  const { authUser, profile, selectedCareers } = useAppContext();
+  const { data: careers, loading, error } = useCareers();
+
+  if (loading) {
+    return (
+      <AppFrame title="Calculando..." subtitle="Buscando tu match." progress={88}>
+        <Surface className="surface--stack">
+          <div className="compare-loading-grid">
+            <div className="skeleton-box" />
+            <div className="skeleton-box" />
+          </div>
+          <div className="skeleton-line" />
+        </Surface>
+      </AppFrame>
+    );
+  }
+
+  if (error || careers.length === 0) {
+    return (
+      <AppFrame
+        title="No se pudo"
+        subtitle={error ?? "No hay carreras disponibles."}
+        progress={88}
+      >
+        <Surface className="surface--stack post-empty-state">
+          <AlertCircle size={34} />
+          <strong>Elige otra vez</strong>
+          <p>Vuelve al catalogo y selecciona dos carreras.</p>
+          <SecondaryButton onClick={() => navigate("/compare")}>
+            Volver
+          </SecondaryButton>
+        </Surface>
+      </AppFrame>
+    );
+  }
+
+  const validIds = new Set(careers.map((career) => career.id));
+  const selected = Array.from(new Set(selectedCareers)).filter((careerId) =>
+    validIds.has(careerId),
+  );
+  const careersToShow =
+    selected.length > 0
+      ? selected
+          .map((careerId) => careers.find((career) => career.id === careerId))
+          .filter((career): career is CareerViewModel => Boolean(career))
+      : careers.slice(0, 2);
+  const hasProfile = Boolean(profile.id ?? authUser?.studentProfileId);
+  const bestCareer = careersToShow
+    .slice()
+    .sort((a, b) => b.match - a.match)[0];
 
   return (
-    <AppFrame
-      title="Tu Match Perfecto"
-      subtitle="Este resultado no decide por ti; te ayuda a conversar mejor."
-      progress={88}
-    >
-      <Surface className="surface--stack">
-        <div className="match-intro">
+    <AppFrame title="Tu match" subtitle="Elige con señales claras." progress={88}>
+      <Surface className="surface--stack match-result-shell">
+        <div className="post-section-title">
+          <span>
+            <Target size={18} />
+          </span>
           <div>
-            <span className="eyebrow">Personalizado para ti</span>
-            <h2>Elige con más claridad, no con más presión.</h2>
-            <p>
-              Te mostramos fortalezas, riesgos y preguntas para decidir con más
-              confianza.
-            </p>
+            <strong>Tu mejor match</strong>
+            <p>{bestCareer?.name ?? "Carrera sugerida"}</p>
           </div>
         </div>
 
-        <div className="match-grid">
-          {selected.map((careerId) => {
-            const career =
-              careers.find((item) => item.id === careerId) ?? careers[0];
-
-            return (
-              <Surface key={career.id}>
-                <div className="match-grid__head">
-                  <div>
-                    <span className="badge badge--area">{career.area}</span>
-                    <h3>{career.name}</h3>
-                  </div>
-                  <div className="match-grid__score">{career.match}%</div>
+        <div className="match-grid match-grid--visual">
+          {careersToShow.map((career) => (
+            <Surface key={career.id} className="match-card-lite match-card-lite--visual">
+              <div className="match-grid__head">
+                <div>
+                  <span className="badge badge--area">{career.area}</span>
+                  <h3>{career.name}</h3>
                 </div>
-
-                <MatchScore career={career} />
-
-                <div className="detail-list detail-list--split">
-                  <strong>Fortalezas</strong>
-                  {career.strengths.map((item) => (
-                    <span key={item}>{item}</span>
-                  ))}
+                <div className="match-grid__score">
+                  <TrendingUp size={16} />
+                  {career.match}%
                 </div>
+              </div>
 
-                <div className="detail-list detail-list--split detail-list--danger">
-                  <strong>Riesgos a reforzar</strong>
-                  {career.risks.map((item) => (
-                    <span key={item}>{item}</span>
-                  ))}
-                </div>
-              </Surface>
-            );
-          })}
+              <MatchScore career={career} />
+
+              <div className="detail-list detail-list--split detail-list--icon">
+                <strong>
+                  <CheckCircle2 size={15} />
+                  Fuerte
+                </strong>
+                {career.strengths.slice(0, 3).map((item) => (
+                  <span key={item}>
+                    <CheckCircle2 size={14} />
+                    {item}
+                  </span>
+                ))}
+              </div>
+
+              <div className="detail-list detail-list--split detail-list--danger detail-list--icon">
+                <strong>
+                  <ShieldAlert size={15} />
+                  Reforzar
+                </strong>
+                {career.risks.slice(0, 3).map((item) => (
+                  <span key={item}>
+                    <ShieldAlert size={14} />
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </Surface>
+          ))}
         </div>
 
-        <Surface>
-          <h3>Preguntas para decidir mejor</h3>
-          <div className="question-list">
-            <span>¿Te motiva más construir tecnología o mejorar procesos?</span>
-            <span>¿Te ves practicando programación cada semana?</span>
-            <span>¿Te gusta coordinar personas y recursos?</span>
+        <Surface className="question-snap question-snap--visual">
+          <div className="post-section-title post-section-title--small">
+            <span>
+              <HelpCircle size={17} />
+            </span>
+            <div>
+              <strong>Piensa rapido</strong>
+              <p>Responde mentalmente antes del plan.</p>
+            </div>
+          </div>
+          <div className="question-list question-list--icon">
+            <span>
+              <Lightbulb size={14} />
+              Que practicarias cada semana?
+            </span>
+            <span>
+              <Lightbulb size={14} />
+              Que duda necesitas resolver?
+            </span>
+            <span>
+              <Lightbulb size={14} />
+              Con quien lo conversarias?
+            </span>
           </div>
         </Surface>
       </Surface>
 
       <StickyCTA
-        left={<span>Próximo paso</span>}
+        left={<span>Siguiente paso</span>}
         right={
-          <PrimaryButton onClick={() => navigate("/plan")}>
-            Crear mi plan
+          <PrimaryButton onClick={() => navigate(hasProfile ? "/plan" : "/onboarding")}>
+            {hasProfile ? "Crear plan" : "Terminar perfil"}
+            <ArrowRight size={16} />
           </PrimaryButton>
         }
       />

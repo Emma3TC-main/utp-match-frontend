@@ -8,7 +8,7 @@ import type {
   CycleViewModel,
 } from "../types/domain";
 
-const USE_MOCKS = import.meta.env.VITE_USE_MOCKS !== "false";
+const USE_MOCKS = import.meta.env.VITE_USE_MOCKS === "true";
 
 export const careerService = {
   async getCareers(): Promise<CareerViewModel[]> {
@@ -17,7 +17,19 @@ export const careerService = {
     }
 
     const json = await apiClient.get<unknown>(endpoints.careers.list);
-    return schemaGuard.parseCareerListResponse(json);
+    const items = schemaGuard.parseCareerListResponse(json);
+
+    return Promise.all(
+      items.map(async (career) => {
+        try {
+          return await this.getCareerById(career.id);
+        } catch {
+          return career;
+        }
+      }),
+    ).then((items) =>
+      items.filter((career): career is CareerViewModel => Boolean(career)),
+    );
   },
 
   async getCareerById(careerId: string): Promise<CareerViewModel | null> {
@@ -29,17 +41,43 @@ export const careerService = {
       endpoints.careers.detail(careerId),
     );
 
-    return schemaGuard.parseCareerResponse(json);
+    const career = schemaGuard.parseCareerResponse(json);
+
+    try {
+      const curriculum = await this.getCurriculumByCareerId(careerId);
+      return {
+        ...career,
+        courses: curriculum.flatMap((cycle) => cycle.courses),
+      };
+    } catch {
+      return career;
+    }
   },
 
   async getCourseById(courseId: string): Promise<CourseViewModel | null> {
+    if (USE_MOCKS) {
+      const allCareers = await this.getCareers();
+
+      return (
+        allCareers
+          .flatMap((career) => career.courses)
+          .find((course) => course.id === courseId) ?? null
+      );
+    }
+
     const allCareers = await this.getCareers();
 
-    return (
-      allCareers
-        .flatMap((career) => career.courses)
-        .find((course) => course.id === courseId) ?? null
-    );
+    for (const career of allCareers) {
+      const course = career.courses.find(
+        (item) => item.id === courseId || item.syllabusId === courseId,
+      );
+
+      if (course) {
+        return course;
+      }
+    }
+
+    return null;
   },
 
   async getCurriculumByCareerId(careerId: string): Promise<CycleViewModel[]> {

@@ -1,12 +1,12 @@
 export type AuthUserMenu = {
   id: string;
-  email: string;
+  email?: string | null;
   name: string;
 } | null;
 
 export type ProfileUser = {
   name: string;
-  email: string;
+  email?: string | null;
   phone?: string;
   description?: string;
   photo?: string;
@@ -18,9 +18,3 @@ export type ProfileUpdates = {
   description?: string;
 };
 
-export type AuthFormData = {
-  email: string;
-  password: string;
-  name?: string;
-  confirmPassword?: string;
-};

@@ -1,16 +1,13 @@
 import { apiClient } from "../lib/apiClient";
 import { endpoints } from "../lib/endpoints";
 import { schemaGuard } from "../lib/schemaGuard";
-import type {
-  CareerComparisonRequestDto,
-  CareerComparisonResponseDto,
-} from "../types/api";
+import type { CareerComparisonRequestDto } from "../types/api";
 import type { CareerViewModel, ComparisonViewModel } from "../types/domain";
 
-const USE_MOCKS = import.meta.env.VITE_USE_MOCKS !== "false";
+const USE_MOCKS = import.meta.env.VITE_USE_MOCKS === "true";
 
 type CreateComparisonInput = {
-  studentProfileId: string;
+  studentProfileId?: string;
   firstCareer: CareerViewModel;
   secondCareer: CareerViewModel;
 };
@@ -36,13 +33,13 @@ export const comparisonService = {
           ...input.secondCareer.risks.slice(0, 2),
         ],
         recommendedQuestions: [
-          "¿Qué tipo de problemas te gustaría resolver todos los días?",
-          "¿Te motiva más programar, gestionar, diseñar o comunicar?",
-          "¿Qué curso del primer ciclo te genera más curiosidad?",
+          "Que problema te gustaria resolver cada dia?",
+          "Te motiva mas programar, gestionar o comunicar?",
+          "Que curso te genera curiosidad?",
         ],
         nextBestActions: [
           "Revisar cursos clave",
-          "Guardar comparación",
+          "Guardar comparacion",
           "Conversar con un estudiante",
         ],
         createdAt: new Date().toISOString(),
@@ -58,10 +55,10 @@ export const comparisonService = {
       includeSyllabusSignals: true,
     };
 
-    const json = await apiClient.post<
-      CareerComparisonResponseDto,
-      CareerComparisonRequestDto
-    >(endpoints.comparisons.create, body);
+    const json = await apiClient.post<unknown, CareerComparisonRequestDto>(
+      endpoints.comparisons.create,
+      body,
+    );
 
     return schemaGuard.parseComparisonResponse(
       json,

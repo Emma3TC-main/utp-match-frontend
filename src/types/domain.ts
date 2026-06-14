@@ -80,7 +80,7 @@ export type ActionTask = {
   id: string;
   title: string;
   description: string;
-  priority: "Alta prioridad" | "Recomendado" | "Personal";
+  priority: "Alta prioridad" | "Recomendado" | "Personal" | string;
   due: string;
 };
 
@@ -88,9 +88,9 @@ export type ActionTask = {
  * ViewModels del diagrama frontend
  */
 
-export type CareerViewModel = CareerData;
+export type CareerViewModel = Career;
 
-export type CourseViewModel = CourseData;
+export type CourseViewModel = Course;
 
 export type CycleViewModel = {
   cycle: string;
@@ -148,6 +148,9 @@ export type ExplanationViewModel = {
   exampleActivities?: string[];
   profileImpact: string;
   recommendedPreparation?: string[];
+  modelProvider?: string;
+  modelName?: string;
+  fallbackUsed?: boolean;
 };
 
 export type PlanTaskViewModel = ActionTask & {
@@ -160,4 +163,15 @@ export type PlanTaskViewModel = ActionTask & {
     | "prepare_skill";
   status?: "pending" | "done" | "skipped";
   dueDate?: string;
+};
+
+export type PlanViewModel = {
+  id: string;
+  studentProfileId: string;
+  targetCareerId: string;
+  comparisonId?: string | null;
+  status: "draft" | "active" | "completed" | "archived";
+  progressPercent: number;
+  tasks: PlanTaskViewModel[];
+  notes?: string;
 };

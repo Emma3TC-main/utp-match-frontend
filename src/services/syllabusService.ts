@@ -1,18 +1,13 @@
-// src/services/syllabusService.ts
-
 import { apiClient } from "../lib/apiClient";
 import { endpoints } from "../lib/endpoints";
 import { schemaGuard } from "../lib/schemaGuard";
-import type {
-  SyllabusExplanationRequestDto,
-  SyllabusExplanationResponseDto,
-} from "../types/api";
+import type { SyllabusExplanationRequestDto } from "../types/api";
 import type { CourseViewModel, ExplanationViewModel } from "../types/domain";
 
-const USE_MOCKS = import.meta.env.VITE_USE_MOCKS !== "false";
+const USE_MOCKS = import.meta.env.VITE_USE_MOCKS === "true";
 
 type ExplainSyllabusInput = {
-  studentProfileId: string;
+  studentProfileId?: string;
   course: CourseViewModel;
 };
 
@@ -31,14 +26,14 @@ export const syllabusService = {
         skillsYouBuild: [input.course.skill ?? "Habilidad aplicada"],
         exampleActivities: [
           "Resolver ejercicios cortos",
-          "Revisar casos prácticos",
+          "Revisar casos practicos",
           "Preguntar dudas al docente o tutor",
         ],
         profileImpact: input.course.impact,
         recommendedPreparation: [
           "Repasar conceptos base",
           "Practicar de forma constante",
-          "Guardar dudas para tutoría",
+          "Guardar dudas para tutoria",
         ],
       };
     }
@@ -49,15 +44,17 @@ export const syllabusService = {
       tone: "clear_youthful",
       outputFormat: "structured_json",
       includeDifficultySignals: true,
-      includeFitComment: true,
+      context: {
+        courseId: input.course.id,
+      },
     };
 
     const syllabusId = input.course.syllabusId ?? input.course.id;
 
-    const json = await apiClient.post<
-      SyllabusExplanationResponseDto,
-      SyllabusExplanationRequestDto
-    >(endpoints.syllabi.explain(syllabusId), body);
+    const json = await apiClient.post<unknown, SyllabusExplanationRequestDto>(
+      endpoints.syllabi.explain(syllabusId),
+      body,
+    );
 
     return schemaGuard.parseSyllabusExplanationResponse(json, input.course);
   },

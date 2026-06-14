@@ -1,8 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { AtSign, Lock, Mail, X } from "lucide-react";
+import { Mail, X } from "lucide-react";
 import type { FormEvent } from "react";
 import { useState } from "react";
-import type { AuthFormData } from "../types/auth";
 
 export function LoginModal({
   isOpen,
@@ -11,16 +10,13 @@ export function LoginModal({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (email: string, password: string) => void;
+  onSubmit: (email: string) => void;
 }) {
-  const [formData, setFormData] = useState<AuthFormData>({
-    email: "",
-    password: "",
-  });
+  const [email, setEmail] = useState("");
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    onSubmit(formData.email, formData.password);
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault();
+    onSubmit(email);
   };
 
   return (
@@ -41,7 +37,7 @@ export function LoginModal({
             exit={{ opacity: 0, y: -20 }}
           >
             <div className="modal-header">
-              <h2>Iniciar sesión</h2>
+              <h2>Entrar</h2>
               <button className="modal-close-button" onClick={onClose}>
                 <X size={20} />
               </button>
@@ -50,7 +46,7 @@ export function LoginModal({
             <form onSubmit={handleSubmit} className="modal-form">
               <div className="form-group">
                 <label htmlFor="email" className="form-label">
-                  Correo electrónico
+                  Correo
                 </label>
                 <div className="form-input-wrapper">
                   <Mail size={16} className="form-input-icon" />
@@ -59,57 +55,17 @@ export function LoginModal({
                     type="email"
                     className="form-input"
                     placeholder="tu@correo.com"
-                    value={formData.email}
-                    onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
-                    }
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    required
                   />
                 </div>
               </div>
 
-              <div className="form-group">
-                <label htmlFor="password" className="form-label">
-                  Contraseña
-                </label>
-                <div className="form-input-wrapper">
-                  <Lock size={16} className="form-input-icon" />
-                  <input
-                    id="password"
-                    type="password"
-                    className="form-input"
-                    placeholder="••••••••"
-                    value={formData.password}
-                    onChange={(e) =>
-                      setFormData({ ...formData, password: e.target.value })
-                    }
-                  />
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                className="btn btn-primary"
-                style={{ width: "100%" }}
-              >
-                Iniciar sesión
+              <button type="submit" className="btn btn-primary">
+                Entrar
               </button>
             </form>
-
-            <div className="modal-divider">o continúa con</div>
-
-            <div className="modal-social-buttons">
-              <button className="social-button social-button--google" disabled>
-                <Mail size={16} />
-                Gmail
-              </button>
-              <button
-                className="social-button social-button--microsoft"
-                disabled
-              >
-                <AtSign size={16} />
-                Microsoft
-              </button>
-            </div>
           </motion.div>
         </>
       )}

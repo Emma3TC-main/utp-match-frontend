@@ -8,5 +8,6 @@ export { default as OnboardingPage } from "./OnboardingPage";
 export { default as PlanPage } from "./PlanPage";
 export { default as RegisterPage } from "./RegisterPage";
 export { default as SelectorPage } from "./SelectorPage";
+export { default as SharedPage } from "./SharedPage";
 export { default as SummaryPage } from "./SummaryPage";
 export { default as WelcomePage } from "./WelcomePage";

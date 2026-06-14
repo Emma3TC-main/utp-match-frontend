@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { Mail, Phone, Upload, UserRound, X } from "lucide-react";
+import { Mail, Phone, Sparkles, UserRound, X } from "lucide-react";
 import type { FormEvent } from "react";
 import { useState } from "react";
 import { createPortal } from "react-dom";
@@ -23,8 +23,8 @@ export function UserProfileModal({
     description: user?.description || "",
   });
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault();
     onUpdate(formData);
   };
 
@@ -43,7 +43,7 @@ export function UserProfileModal({
           />
 
           <motion.aside
-            className="profile-side-menu"
+            className="profile-side-menu profile-side-menu--visual"
             initial={{ x: 420 }}
             animate={{ x: 0 }}
             exit={{ x: 420 }}
@@ -54,7 +54,7 @@ export function UserProfileModal({
               <button
                 className="icon-button"
                 onClick={onClose}
-                aria-label="Cerrar menú"
+                aria-label="Cerrar menu"
               >
                 <X size={18} />
               </button>
@@ -66,12 +66,12 @@ export function UserProfileModal({
             >
               <div className="profile-photo-section">
                 <div className="profile-photo-placeholder">
-                  <UserRound size={40} />
+                  <UserRound size={36} />
                 </div>
-                <button className="profile-photo-button" type="button" disabled>
-                  <Upload size={14} />
-                  Cambiar foto
-                </button>
+                <span className="profile-mini-note">
+                  <Sparkles size={14} />
+                  Sesion activa
+                </span>
               </div>
 
               <div className="form-group">
@@ -86,24 +86,21 @@ export function UserProfileModal({
                     className="form-input"
                     placeholder="Tu nombre"
                     value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
+                    onChange={(event) =>
+                      setFormData({ ...formData, name: event.target.value })
                     }
                   />
                 </div>
               </div>
 
               <div className="form-group">
-                <label className="form-label">Correo electrónico</label>
-                <div
-                  className="form-input-wrapper"
-                  style={{ opacity: 0.6, pointerEvents: "none" }}
-                >
+                <label className="form-label">Correo</label>
+                <div className="form-input-wrapper form-input-wrapper--readonly">
                   <Mail size={16} className="form-input-icon" />
                   <input
                     type="email"
                     className="form-input"
-                    placeholder={user?.email}
+                    placeholder={user?.email ?? "Sin correo"}
                     disabled
                   />
                 </div>
@@ -121,8 +118,8 @@ export function UserProfileModal({
                     className="form-input"
                     placeholder="+51 999 999 999"
                     value={formData.phone}
-                    onChange={(e) =>
-                      setFormData({ ...formData, phone: e.target.value })
+                    onChange={(event) =>
+                      setFormData({ ...formData, phone: event.target.value })
                     }
                   />
                 </div>
@@ -130,25 +127,24 @@ export function UserProfileModal({
 
               <div className="form-group">
                 <label htmlFor="profile-description" className="form-label">
-                  Descripción
+                  Bio corta
                 </label>
                 <textarea
                   id="profile-description"
                   className="form-input form-textarea"
-                  placeholder="Cuéntame sobre ti..."
+                  placeholder="Que quieres explorar?"
                   value={formData.description}
-                  onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
+                  onChange={(event) =>
+                    setFormData({
+                      ...formData,
+                      description: event.target.value,
+                    })
                   }
                 />
               </div>
 
-              <button
-                type="submit"
-                className="btn btn-primary"
-                style={{ width: "100%" }}
-              >
-                Guardar cambios
+              <button type="submit" className="btn btn-primary">
+                Guardar
               </button>
             </form>
           </motion.aside>

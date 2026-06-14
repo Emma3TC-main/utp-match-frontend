@@ -1,26 +1,31 @@
+import { BookOpen, GitCompareArrows, ListChecks, Share2 } from "lucide-react";
 import { AppFrame, LinkCard, Surface } from "../components/ui";
 import { useAppContext } from "../state/appState";
 
 const homeLinks = [
   {
-    title: "Comparar carreras",
-    body: "Selecciona Ingeniería de Sistemas e Ingeniería Industrial.",
+    title: "Comparar",
+    body: "Elige dos carreras.",
     to: "/compare",
+    icon: <GitCompareArrows size={18} />,
   },
   {
-    title: "Entiende un curso",
-    body: "Traduce Principios de Algoritmos a lenguaje claro.",
-    to: "/course/algoritmos",
+    title: "Curso IA",
+    body: "Entiende un silabo.",
+    to: "/course/syl-soft-math-1",
+    icon: <BookOpen size={18} />,
   },
   {
-    title: "Crea tu plan",
-    body: "Convierte tus dudas en próximos pasos.",
+    title: "Plan",
+    body: "Pasos claros.",
     to: "/plan",
+    icon: <ListChecks size={18} />,
   },
   {
-    title: "Ver resumen",
-    body: "Guarda una pieza lista para compartir con tu familia.",
+    title: "Resumen",
+    body: "Listo para compartir.",
     to: "/summary",
+    icon: <Share2 size={18} />,
   },
 ];
 
@@ -29,21 +34,15 @@ export default function HomePage() {
 
   return (
     <AppFrame
-      title={`Hola, ${profile.name}.`}
-      subtitle="Tu decisión puede tener dudas, pero no tiene que estar desordenada."
+      title={`Hola, ${profile.name || "estudiante"}.`}
+      subtitle="Elige tu siguiente paso."
       progress={45}
     >
       <Surface className="surface--stack">
         <div className="home-hero">
-          <span className="eyebrow">Tu journey vocacional</span>
-          <h2>
-            Empieza comparando dos carreras. Luego entiende cursos y crea tu
-            plan.
-          </h2>
-          <p>
-            Comparamos con evidencia, no solo con opiniones. Todo pensado para
-            que avances sin saturarte.
-          </p>
+          <span className="eyebrow">Tu ruta</span>
+          <h2>Compara, entiende y avanza.</h2>
+          <p>Todo conectado al backend real.</p>
         </div>
 
         <div className="home-grid">
@@ -53,6 +52,7 @@ export default function HomePage() {
               title={link.title}
               body={link.body}
               to={link.to}
+              icon={link.icon}
             />
           ))}
         </div>

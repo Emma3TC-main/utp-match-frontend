@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { LogIn, LogOut, X } from "lucide-react";
+import { LogIn, LogOut, UserRound, X } from "lucide-react";
 import { createPortal } from "react-dom";
 import { useBodySidePanelLock } from "../hooks/useBodySidePanelLock";
 import type { AuthUserMenu } from "../types/auth";
@@ -8,12 +8,14 @@ export function FloatingAuthMenu({
   isOpen,
   onClose,
   onLoginClick,
+  onProfileClick,
   authUser,
   onLogout,
 }: {
   isOpen: boolean;
   onClose: () => void;
   onLoginClick: () => void;
+  onProfileClick?: () => void;
   authUser?: AuthUserMenu;
   onLogout?: () => void;
 }) {
@@ -32,7 +34,7 @@ export function FloatingAuthMenu({
           />
 
           <motion.aside
-            className="side-auth-menu"
+            className="side-auth-menu side-auth-menu--visual"
             initial={{ x: 320 }}
             animate={{ x: 0 }}
             exit={{ x: 320 }}
@@ -43,50 +45,63 @@ export function FloatingAuthMenu({
               <button
                 className="icon-button"
                 onClick={onClose}
-                aria-label="Cerrar menú"
+                aria-label="Cerrar menu"
               >
                 <X size={16} />
               </button>
             </div>
 
             <div className="side-auth-body">
-              <p>Accede o crea una cuenta para guardar tus planes.</p>
+              <p>{authUser ? "Tu avance esta listo." : "Entra y guarda tu ruta."}</p>
               <div className="side-auth-actions">
                 {authUser ? (
                   <>
-                    <div style={{ padding: "8px 0", color: "var(--text)" }}>
-                      Conectado como{" "}
-                      <strong style={{ display: "block" }}>
-                        {authUser.name || authUser.email}
-                      </strong>
+                    <div className="side-user-card">
+                      <span>
+                        <UserRound size={18} />
+                      </span>
+                      <div>
+                        <strong>{authUser.name || authUser.email}</strong>
+                        <p>{authUser.email ?? "Sesion activa"}</p>
+                      </div>
                     </div>
+
                     <button
                       className="side-btn"
                       type="button"
                       onClick={() => {
-                        if (onLogout) onLogout();
+                        onProfileClick?.();
+                        onClose();
+                      }}
+                    >
+                      <UserRound size={16} />
+                      <span>Ver perfil</span>
+                    </button>
+
+                    <button
+                      className="side-btn"
+                      type="button"
+                      onClick={() => {
+                        onLogout?.();
                         onClose();
                       }}
                     >
                       <LogOut size={16} />
-                      <span>Cerrar sesión</span>
+                      <span>Cerrar sesion</span>
                     </button>
                   </>
                 ) : (
-                  <>
-                    {/* Botón único y limpio hacia el login inteligente */}
-                    <button
-                      className="side-btn"
-                      type="button"
-                      onClick={() => {
-                        onLoginClick();
-                        onClose();
-                      }}
-                    >
-                      <LogIn size={16} />
-                      <span>Ingresar a mi cuenta</span>
-                    </button>
-                  </>
+                  <button
+                    className="side-btn side-btn--primary"
+                    type="button"
+                    onClick={() => {
+                      onLoginClick();
+                      onClose();
+                    }}
+                  >
+                    <LogIn size={16} />
+                    <span>Entrar</span>
+                  </button>
                 )}
               </div>
             </div>

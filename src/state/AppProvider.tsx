@@ -46,6 +46,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const setSelectedCareers = useCallback((careerIds: string[]) => {
+    setState((current) => ({
+      ...current,
+      selectedCareers: careerIds.slice(0, 2),
+    }));
+  }, []);
+
+  const setCompletedTasks = useCallback((taskIds: string[]) => {
+    setState((current) => ({
+      ...current,
+      completedTasks: taskIds,
+    }));
+  }, []);
+
   const toggleTask = useCallback((taskId: string) => {
     setState((current) => {
       const completed = current.completedTasks.includes(taskId);
@@ -74,6 +88,32 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const setProfile = useCallback((profile: ProfileState) => {
     setState((current) => ({ ...current, profile }));
+  }, []);
+
+  const patchProfile = useCallback((updates: Partial<ProfileState>) => {
+    setState((current) => ({
+      ...current,
+      profile: {
+        ...current.profile,
+        ...updates,
+      },
+    }));
+  }, []);
+
+  const setComparisonId = useCallback((comparisonId?: string) => {
+    setState((current) => ({ ...current, comparisonId }));
+  }, []);
+
+  const setPlanId = useCallback((planId?: string) => {
+    setState((current) => ({ ...current, planId }));
+  }, []);
+
+  const setVocationalReportId = useCallback((vocationalReportId?: string) => {
+    setState((current) => ({ ...current, vocationalReportId }));
+  }, []);
+
+  const setShareUrl = useCallback((shareUrl?: string) => {
+    setState((current) => ({ ...current, shareUrl }));
   }, []);
 
   const setComparisonTab = useCallback((tab: ComparisonTab) => {
@@ -108,9 +148,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
     () => ({
       ...state,
       setProfile,
+      patchProfile,
       toggleCareer,
+      setSelectedCareers,
+      setCompletedTasks,
       toggleTask,
       toggleSavedCourse,
+      setComparisonId,
+      setPlanId,
+      setVocationalReportId,
+      setShareUrl,
       setComparisonTab,
       setIsLoading,
       setAuthUser,
@@ -119,9 +166,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [
       state,
       setProfile,
+      patchProfile,
       toggleCareer,
+      setSelectedCareers,
+      setCompletedTasks,
       toggleTask,
       toggleSavedCourse,
+      setComparisonId,
+      setPlanId,
+      setVocationalReportId,
+      setShareUrl,
       setComparisonTab,
       setIsLoading,
       setAuthUser,

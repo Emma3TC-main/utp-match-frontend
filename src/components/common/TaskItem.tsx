@@ -1,4 +1,4 @@
-import { Check } from "lucide-react";
+import { Check, Clock3, Flag, ListChecks } from "lucide-react";
 
 export function TaskItem({
   title,
@@ -18,17 +18,24 @@ export function TaskItem({
   return (
     <button
       type="button"
-      className={`task-item ${checked ? "task-item--checked" : ""}`}
+      className={`task-item task-item--visual ${checked ? "task-item--checked" : ""}`}
       onClick={onToggle}
     >
       <span className="task-item__check">
-        {checked ? <Check size={15} /> : null}
+        {checked ? <Check size={15} /> : <ListChecks size={15} />}
       </span>
       <span className="task-item__content">
         <strong>{title}</strong>
-        <span>{description}</span>
+        <span>{description || "Paso rapido."}</span>
         <span className="task-item__meta">
-          <em>{priority}</em> · Vence: {due}
+          <em>
+            <Flag size={12} />
+            {priority}
+          </em>
+          <small>
+            <Clock3 size={12} />
+            {due}
+          </small>
         </span>
       </span>
     </button>

@@ -8,6 +8,7 @@ type UseActionPlanInput = {
 };
 
 export function useActionPlan(input: UseActionPlanInput) {
+  const { studentProfileId, targetCareerId } = input;
   const [tasks, setTasks] = useState<PlanTaskViewModel[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -20,7 +21,10 @@ export function useActionPlan(input: UseActionPlanInput) {
         setLoading(true);
         setError(null);
 
-        const result = await actionPlanService.getActionPlan(input);
+        const result = await actionPlanService.getActionPlan({
+          studentProfileId,
+          targetCareerId,
+        });
 
         if (active) {
           setTasks(result);
@@ -41,7 +45,7 @@ export function useActionPlan(input: UseActionPlanInput) {
     return () => {
       active = false;
     };
-  }, [input.studentProfileId, input.targetCareerId]);
+  }, [studentProfileId, targetCareerId]);
 
   return {
     tasks,

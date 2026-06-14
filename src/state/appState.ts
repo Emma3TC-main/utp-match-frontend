@@ -2,8 +2,10 @@ import { createContext, useContext } from "react";
 import type { ComparisonTab } from "../types/domain";
 
 export type ProfileState = {
+  id?: string;
+  userId?: string;
   name: string;
-  year: string;
+  year: "4_secundaria" | "5_secundaria" | "egresado" | "otro";
   interests: string[];
   skills: string[];
   doubts: string;
@@ -12,8 +14,10 @@ export type ProfileState = {
 
 export type AuthUser = {
   id: string;
-  email: string;
+  email?: string | null;
   name: string;
+  role?: string;
+  studentProfileId?: string | null;
   phone?: string;
   description?: string;
   photo?: string;
@@ -24,6 +28,10 @@ export type AppStateSnapshot = {
   selectedCareers: string[];
   completedTasks: string[];
   savedCourses: string[];
+  comparisonId?: string;
+  planId?: string;
+  vocationalReportId?: string;
+  shareUrl?: string;
   selectedComparisonTab: ComparisonTab;
   isLoading: boolean;
   authUser: AuthUser | null;
@@ -31,9 +39,16 @@ export type AppStateSnapshot = {
 
 export type AppStateValue = AppStateSnapshot & {
   setProfile: (profile: ProfileState) => void;
+  patchProfile: (updates: Partial<ProfileState>) => void;
   toggleCareer: (careerId: string) => void;
+  setSelectedCareers: (careerIds: string[]) => void;
+  setCompletedTasks: (taskIds: string[]) => void;
   toggleTask: (taskId: string) => void;
   toggleSavedCourse: (courseId: string) => void;
+  setComparisonId: (comparisonId?: string) => void;
+  setPlanId: (planId?: string) => void;
+  setVocationalReportId: (vocationalReportId?: string) => void;
+  setShareUrl: (shareUrl?: string) => void;
   setComparisonTab: (tab: ComparisonTab) => void;
   setIsLoading: (value: boolean) => void;
   setAuthUser: (user: AuthUser | null) => void;
@@ -43,19 +58,25 @@ export type AppStateValue = AppStateSnapshot & {
 export const STORAGE_KEY = "utp-match-state-v1";
 
 export const defaultProfile: ProfileState = {
-  name: "Andrea García",
-  year: "5.° de secundaria",
-  interests: ["Tecnología", "Diseño"],
-  skills: ["Matemáticas", "Creatividad"],
-  doubts: "Carreras en duda",
-  worry: "No sé qué tan exigente será la carrera",
+  id: undefined,
+  userId: undefined,
+  name: "",
+  year: "5_secundaria",
+  interests: [],
+  skills: [],
+  doubts: "",
+  worry: "",
 };
 
 export const defaultState: AppStateSnapshot = {
   profile: defaultProfile,
-  selectedCareers: ["systems", "industrial"],
-  completedTasks: ["courses"],
-  savedCourses: ["algoritmos"],
+  selectedCareers: [],
+  completedTasks: [],
+  savedCourses: [],
+  comparisonId: undefined,
+  planId: undefined,
+  vocationalReportId: undefined,
+  shareUrl: undefined,
   selectedComparisonTab: "Resumen",
   isLoading: false,
   authUser: null,
@@ -80,10 +101,18 @@ export function readStoredState(): AppStateSnapshot {
     return {
       ...defaultState,
       ...parsed,
-      profile: parsed.profile ?? defaultState.profile,
+      profile: {
+        ...defaultState.profile,
+        ...(parsed.profile ?? {}),
+      },
       selectedCareers: parsed.selectedCareers ?? defaultState.selectedCareers,
       completedTasks: parsed.completedTasks ?? defaultState.completedTasks,
       savedCourses: parsed.savedCourses ?? defaultState.savedCourses,
+      comparisonId: parsed.comparisonId ?? defaultState.comparisonId,
+      planId: parsed.planId ?? defaultState.planId,
+      vocationalReportId:
+        parsed.vocationalReportId ?? defaultState.vocationalReportId,
+      shareUrl: parsed.shareUrl ?? defaultState.shareUrl,
       selectedComparisonTab:
         parsed.selectedComparisonTab ?? defaultState.selectedComparisonTab,
       isLoading: parsed.isLoading ?? defaultState.isLoading,

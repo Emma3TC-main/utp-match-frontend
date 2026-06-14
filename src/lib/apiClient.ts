@@ -1,10 +1,27 @@
 const API_BASE_URL = (import.meta.env.VITE_API_URL ?? "").replace(/\/$/, "");
+const DEFAULT_HEADERS: HeadersInit = {
+  "Content-Type": "application/json",
+  "ngrok-skip-browser-warning": "true",
+};
 
 type RequestOptions = {
   headers?: HeadersInit;
+  query?: Record<string, string | number | boolean | null | undefined>;
 };
 
 class ApiClient {
+  private buildUrl(path: string, query?: RequestOptions["query"]): string {
+    const url = new URL(`${API_BASE_URL}${path}`);
+
+    Object.entries(query ?? {}).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        url.searchParams.set(key, String(value));
+      }
+    });
+
+    return url.toString();
+  }
+
   private attachAuthHeaders(): HeadersInit {
     const token = window.localStorage.getItem("utp-match-token");
 
@@ -18,10 +35,10 @@ class ApiClient {
   }
 
   async get<T>(path: string, options?: RequestOptions): Promise<T> {
-    const response = await fetch(`${API_BASE_URL}${path}`, {
+    const response = await fetch(this.buildUrl(path, options?.query), {
       method: "GET",
       headers: {
-        "Content-Type": "application/json",
+        ...DEFAULT_HEADERS,
         ...this.attachAuthHeaders(),
         ...options?.headers,
       },
@@ -35,10 +52,10 @@ class ApiClient {
     body?: B,
     options?: RequestOptions,
   ): Promise<T> {
-    const response = await fetch(`${API_BASE_URL}${path}`, {
+    const response = await fetch(this.buildUrl(path, options?.query), {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        ...DEFAULT_HEADERS,
         ...this.attachAuthHeaders(),
         ...options?.headers,
       },
@@ -53,10 +70,10 @@ class ApiClient {
     body: B,
     options?: RequestOptions,
   ): Promise<T> {
-    const response = await fetch(`${API_BASE_URL}${path}`, {
+    const response = await fetch(this.buildUrl(path, options?.query), {
       method: "PATCH",
       headers: {
-        "Content-Type": "application/json",
+        ...DEFAULT_HEADERS,
         ...this.attachAuthHeaders(),
         ...options?.headers,
       },
@@ -68,7 +85,18 @@ class ApiClient {
 
   private async handleResponse<T>(response: Response): Promise<T> {
     if (!response.ok) {
-      const message = await response.text();
+      const text = await response.text();
+      let message: string;
+
+      try {
+        const json = JSON.parse(text) as {
+          error?: { message?: string; code?: string };
+        };
+        message = json.error?.message ?? json.error?.code ?? text;
+      } catch {
+        message = text;
+      }
+
       throw new Error(message || `Error HTTP ${response.status}`);
     }
 

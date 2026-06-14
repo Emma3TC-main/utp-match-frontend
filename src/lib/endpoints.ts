@@ -2,11 +2,19 @@ const API_PREFIX = "/v1";
 
 export const endpoints = {
   auth: {
-    guest: `${API_PREFIX}/auth/guest`,
+    status: `${API_PREFIX}/auth/status`,
+    guestSession: `${API_PREFIX}/auth/guest-session`,
+    me: `${API_PREFIX}/auth/me`,
+    logout: `${API_PREFIX}/auth/logout`,
   },
 
   profiles: {
+    create: `${API_PREFIX}/profiles`,
+    list: `${API_PREFIX}/profiles`,
     me: `${API_PREFIX}/profiles/me`,
+    updateMe: `${API_PREFIX}/profiles/me`,
+    detail: (profileId: string) => `${API_PREFIX}/profiles/${profileId}`,
+    update: (profileId: string) => `${API_PREFIX}/profiles/${profileId}`,
   },
 
   consents: {
@@ -22,9 +30,11 @@ export const endpoints = {
 
   vocationalReports: {
     create: `${API_PREFIX}/vocational-reports`,
-    import: `${API_PREFIX}/vocational-reports/import`,
+    list: `${API_PREFIX}/vocational-reports`,
     detail: (reportId: string) =>
       `${API_PREFIX}/vocational-reports/${reportId}`,
+    recommendations: (reportId: string) =>
+      `${API_PREFIX}/vocational-reports/${reportId}/recommendations`,
   },
 
   comparisons: {
@@ -34,6 +44,7 @@ export const endpoints = {
   },
 
   syllabi: {
+    list: `${API_PREFIX}/syllabi`,
     detail: (syllabusId: string) => `${API_PREFIX}/syllabi/${syllabusId}`,
     explain: (syllabusId: string) =>
       `${API_PREFIX}/syllabi/${syllabusId}/explanations`,
@@ -41,13 +52,18 @@ export const endpoints = {
 
   plans: {
     create: `${API_PREFIX}/plans`,
+    list: `${API_PREFIX}/plans`,
     detail: (planId: string) => `${API_PREFIX}/plans/${planId}`,
     update: (planId: string) => `${API_PREFIX}/plans/${planId}`,
+    updateTaskStatus: (planId: string, taskId: string) =>
+      `${API_PREFIX}/plans/${planId}/tasks/${taskId}/status`,
   },
 
   shares: {
     create: `${API_PREFIX}/shares`,
+    list: `${API_PREFIX}/shares`,
     detail: (token: string) => `${API_PREFIX}/shares/${token}`,
+    revoke: (token: string) => `${API_PREFIX}/shares/${token}/revoke`,
   },
 
   events: {
@@ -55,8 +71,15 @@ export const endpoints = {
   },
 
   admin: {
-    careers: `${API_PREFIX}/admin/careers`,
-    courses: `${API_PREFIX}/admin/courses`,
-    syllabi: `${API_PREFIX}/admin/syllabi`,
+    status: `${API_PREFIX}/admin/status`,
+    overview: `${API_PREFIX}/admin/catalog/overview`,
+    careers: `${API_PREFIX}/admin/catalog/careers`,
+    syllabi: `${API_PREFIX}/admin/catalog/syllabi`,
+    auditSummary: `${API_PREFIX}/admin/audit-summary`,
+  },
+
+  ai: {
+    status: `${API_PREFIX}/ai/status`,
+    ask: `${API_PREFIX}/ai/ask`,
   },
 } as const;
