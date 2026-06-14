@@ -1,0 +1,12 @@
+export { default as AdminPage } from "./AdminPage";
+export { default as ComparePage } from "./ComparePage";
+export { default as CoursePage } from "./CoursePage";
+export { default as HomePage } from "./HomePage";
+export { default as LoginPage } from "./LoginPage";
+export { default as MatchPage } from "./MatchPage";
+export { default as OnboardingPage } from "./OnboardingPage";
+export { default as PlanPage } from "./PlanPage";
+export { default as RegisterPage } from "./RegisterPage";
+export { default as SelectorPage } from "./SelectorPage";
+export { default as SummaryPage } from "./SummaryPage";
+export { default as WelcomePage } from "./WelcomePage";
