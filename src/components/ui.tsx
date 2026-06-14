@@ -9,9 +9,6 @@ import { useAppContext } from '../state/appState'
 
 
 export function AppFrame({ children, title, subtitle, progress, showHelp = true }: { children: ReactNode; title?: string; subtitle?: string; progress?: number; showHelp?: boolean }) {
-  const { authUser, setAuthUser, updateAuthUser } = useAppContext()
-  const location = useLocation()
-  
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const savedTheme = window.localStorage.getItem('utp-match-theme')
     return savedTheme === 'dark'
@@ -26,50 +23,17 @@ export function AppFrame({ children, title, subtitle, progress, showHelp = true 
     setIsDarkMode((prev) => {
       const nextState = !prev
       window.localStorage.setItem('utp-match-theme', nextState ? 'dark' : 'light')
+      // 🌓 Elvis: Despachamos un evento nativo rápido para actualizar la raíz en caliente
+      window.dispatchEvent(new Event('utp-theme-toggle'))
       return nextState
     })
   }
-
-  // Páginas donde mostrar el icono de usuario
-  const shouldShowUserIcon = ['/home', '/compare', '/plan'].includes(location.pathname)
 
   const navItems = [
     { to: '/home', label: 'Inicio' },
     { to: '/compare', label: 'Comparar' },
     { to: '/plan', label: 'Mi plan' },
   ]
-
-  const handleLoginSubmit = (email: string, password: string) => {
-    // Simulamos login - en producción sería una llamada a API
-    setAuthUser({
-      id: Math.random().toString(),
-      email,
-      name: email.split('@')[0],
-      phone: '',
-      description: '',
-      photo: '',
-    })
-    setShowLoginModal(false)
-  }
-
-  const handleRegisterSubmit = (email: string, password: string, name: string) => {
-    // Simulamos registro - en producción sería una llamada a API
-    setAuthUser({
-      id: Math.random().toString(),
-      email,
-      name,
-      phone: '',
-      description: '',
-      photo: '',
-    })
-    setShowRegisterModal(false)
-  }
-  const navigate = useNavigate()
-
-  const handleProfileUpdate = (updates: { name?: string; phone?: string; description?: string }) => {
-    updateAuthUser(updates)
-    setShowProfileModal(false)
-  }
 
   return (
     <div className={`app-shell transition-colors duration-250 ${isDarkMode ? 'dark-theme' : 'light-theme'}`}>      
@@ -111,6 +75,7 @@ export function AppFrame({ children, title, subtitle, progress, showHelp = true 
             </button>
           </div>
         </header>
+
         <div className="app-content">
           <header className="app-header">
             <div>
